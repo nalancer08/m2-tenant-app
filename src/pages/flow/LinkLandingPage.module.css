@@ -8,56 +8,128 @@
 }
 
 .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 22px 20px 12px;
 }
 
+.folio {
+  font-family: var(--m2-mono);
+  font-size: 12px;
+  color: var(--m2-mute);
+}
+
 .body {
-  padding: 16px 20px 28px;
+  padding: 8px 20px 28px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
   flex: 1;
 }
 
+.eyebrow {
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--m2-mute);
+}
+
 .title {
-  margin: 0;
+  margin: 4px 0 0;
   font-family: var(--m2-serif);
   font-weight: 400;
-  font-size: 34px;
-  line-height: 1.05;
+  font-size: 32px;
+  line-height: 1.1;
   letter-spacing: -0.02em;
 }
 
+.title em {
+  font-style: italic;
+  color: var(--m2-pino);
+}
+
 .subtitle {
-  margin: 0;
+  margin: 8px 0 16px;
   font-size: 14px;
   color: var(--m2-mute);
   line-height: 1.5;
 }
 
-.label {
+.cardLabel {
   display: block;
   font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--m2-mute);
+  margin-bottom: 6px;
 }
 
-.token {
-  display: block;
-  font-family: var(--m2-mono);
-  font-size: 14px;
+.cardMain {
+  margin: 0;
+  font-weight: 500;
+  font-size: 14.5px;
   color: var(--m2-ink);
-  margin-top: 6px;
-  word-break: break-all;
 }
 
-.note {
-  margin: 12px 0 0;
+.cardMeta {
+  margin: 4px 0 0;
   font-size: 12.5px;
   color: var(--m2-mute);
-  line-height: 1.5;
+}
+
+.cardPrice {
+  margin: 12px 0 0;
+  font-family: var(--m2-mono);
+  font-size: 16px;
+  color: var(--m2-ink);
+}
+
+.includes {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--m2-ink);
+}
+
+.includes li {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.includes li svg {
+  color: var(--m2-ok);
+}
+
+.trustRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--m2-ink);
+}
+
+.trustRow + .trustRow {
+  border-top: 1px solid var(--m2-line-soft);
+}
+
+.trustIcon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--m2-pino-200);
+  color: var(--m2-pino);
 }
 
 .actions {
@@ -65,4 +137,5 @@
   flex-direction: column;
   gap: 10px;
   margin-top: auto;
+  padding-top: 12px;
 }
