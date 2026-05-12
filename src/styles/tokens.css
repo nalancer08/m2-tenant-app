@@ -10,32 +10,33 @@
  */
 
 :root {
-  --m2-ink: #0F1F3D;
-  --m2-pino: #1E4595;
-  --m2-pino-600: #16357A;
-  --m2-pino-200: #CBD9EE;
-  --m2-cal: #F4EFE6;
-  --m2-cal-2: #EAE3D4;
-  --m2-paper: #FBF8F1;
-  --m2-tezontle: #D65A38;
-  --m2-tezontle-soft: #F3CFBF;
+  /* COBALTO palette — canonical values from M2 Prototype.html PALETTES.cobalto */
+  --m2-ink: #0A1F3F;
+  --m2-pino: #1E3A6B;
+  --m2-pino-600: #173058;
+  --m2-pino-200: #CCD4E1;
+  --m2-cal: #F0EEEA;
+  --m2-cal-2: #E5E2DA;
+  --m2-paper: #FAF8F4;
+  --m2-tezontle: #E8623D;
+  --m2-tezontle-soft: #F5D2C2;
   --m2-sun: #E8B13A;
   --m2-sky: #6E9CD2;
   --m2-err: #B2342E;
   --m2-ok: #2C7A52;
-  --m2-line: #1A2F50;
-  --m2-line-soft: rgba(15, 31, 61, 0.12);
-  --m2-mute: rgba(15, 31, 61, 0.6);
-  --m2-mute-2: rgba(15, 31, 61, 0.45);
+  --m2-line: #15294D;
+  --m2-line-soft: rgba(10, 31, 63, 0.12);
+  --m2-mute: rgba(10, 31, 63, 0.6);
+  --m2-mute-2: rgba(10, 31, 63, 0.45);
 
   --m2-chip-ok-bg: #D5E8DB;
   --m2-chip-ok-fg: #15513A;
   --m2-chip-warn-bg: #F5E2C7;
   --m2-chip-warn-fg: #8A5A1B;
-  --m2-chip-info-bg: #D7E1F0;
-  --m2-chip-info-fg: #1A3358;
+  --m2-chip-info-bg: #D7E3F0;
+  --m2-chip-info-fg: #264B74;
 
-  --m2-ink-hover: #070F1F;
+  --m2-ink-hover: #061229;
 
   --m2-serif: 'Instrument Serif', 'Times New Roman', serif;
   --m2-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
