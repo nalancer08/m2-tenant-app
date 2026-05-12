@@ -1,0 +1,10 @@
+.root {
+  background: var(--m2-paper);
+  border: 1px solid var(--m2-line-soft);
+  border-radius: var(--m2-radius);
+  font-family: var(--m2-sans);
+}
+
+.padded {
+  padding: 16px 18px;
+}

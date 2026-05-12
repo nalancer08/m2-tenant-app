@@ -1,0 +1,17 @@
+.root {
+  font-family: var(--m2-serif);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+  display: inline-flex;
+  align-items: baseline;
+  color: var(--m2-ink);
+}
+
+.sup {
+  font-family: var(--m2-sans);
+  font-weight: 500;
+  font-size: 0.45em;
+  transform: translateY(-0.7em);
+  margin-left: 0.08em;
+}

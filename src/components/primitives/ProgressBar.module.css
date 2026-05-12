@@ -1,0 +1,42 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--m2-sans);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.label {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--m2-mute);
+}
+
+.pct {
+  font-family: var(--m2-mono);
+  font-size: 11.5px;
+  color: var(--m2-mute);
+}
+
+.track {
+  position: relative;
+  height: 4px;
+  background: var(--m2-cal-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.fill {
+  position: absolute;
+  inset: 0;
+  background: var(--m2-tezontle);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}

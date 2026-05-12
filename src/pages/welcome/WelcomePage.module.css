@@ -1,0 +1,90 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--m2-serif);
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.title em {
+  font-style: italic;
+  color: var(--m2-pino);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--m2-mute);
+  line-height: 1.5;
+}
+
+.line {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--m2-line-soft);
+}
+
+.line:last-child {
+  border-bottom: none;
+}
+
+.lineIcon {
+  flex-shrink: 0;
+  color: var(--m2-pino);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--m2-pino-200);
+}
+
+.lineTitle {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--m2-ink);
+}
+
+.lineDesc {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--m2-mute);
+  line-height: 1.45;
+}
+
+.placeholderLabel {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--m2-mute);
+  margin-bottom: 8px;
+}
+
+.placeholderDesc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--m2-mute);
+  line-height: 1.5;
+}
+
+.footer {
+  margin-top: 12px;
+}

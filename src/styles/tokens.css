@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&display=swap');
+
+:root {
+  --m2-ink: #0E2A22;
+  --m2-pino: #174A3A;
+  --m2-pino-600: #1F6250;
+  --m2-pino-200: #CFE0D8;
+  --m2-cal: #F4EFE6;
+  --m2-cal-2: #EAE3D4;
+  --m2-paper: #FBF8F1;
+  --m2-tezontle: #D65A38;
+  --m2-tezontle-soft: #F3CFBF;
+  --m2-sun: #E8B13A;
+  --m2-sky: #6E9CD2;
+  --m2-err: #B2342E;
+  --m2-ok: #2C7A52;
+  --m2-line: #1E3B32;
+  --m2-line-soft: rgba(14, 42, 34, 0.12);
+  --m2-mute: rgba(14, 42, 34, 0.6);
+  --m2-mute-2: rgba(14, 42, 34, 0.45);
+
+  --m2-chip-ok-bg: #D5E8DB;
+  --m2-chip-ok-fg: #15513A;
+  --m2-chip-warn-bg: #F5E2C7;
+  --m2-chip-warn-fg: #8A5A1B;
+  --m2-chip-info-bg: #D7E3F0;
+  --m2-chip-info-fg: #264B74;
+
+  --m2-serif: 'Instrument Serif', 'Times New Roman', serif;
+  --m2-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --m2-mono: 'Geist Mono', ui-monospace, monospace;
+
+  --m2-radius-sm: 10px;
+  --m2-radius: 14px;
+  --m2-radius-lg: 22px;
+}

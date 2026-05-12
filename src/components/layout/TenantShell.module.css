@@ -1,0 +1,67 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--m2-cal);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+  background: var(--m2-cal);
+  border-bottom: 1px solid var(--m2-line-soft);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.headerLabel {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--m2-mute);
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  min-width: 140px;
+}
+
+.progressLabel {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--m2-mute);
+}
+
+.progressTrack {
+  position: relative;
+  width: 100%;
+  height: 3px;
+  background: var(--m2-cal-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progressFill {
+  position: absolute;
+  inset: 0;
+  background: var(--m2-tezontle);
+  transition: width 0.3s ease;
+}
+
+.main {
+  flex: 1;
+  padding: 22px 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
