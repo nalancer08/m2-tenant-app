@@ -45,7 +45,7 @@
   color: var(--m2-paper);
 }
 .variant_primary:hover:not(:disabled) {
-  background: #061b14;
+  background: var(--m2-ink-hover);
 }
 
 .variant_tezontle {
