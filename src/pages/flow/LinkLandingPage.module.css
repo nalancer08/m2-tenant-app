@@ -14,10 +14,36 @@
   padding: 22px 20px 12px;
 }
 
+.headerBrand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.headerBrandName {
+  font-family: var(--m2-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--m2-mute);
+}
+
 .folio {
   font-family: var(--m2-mono);
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--m2-mute);
+}
+
+.eyebrowDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--m2-tezontle);
+  box-shadow: 0 0 0 3px rgba(232, 98, 61, 0.18);
+  margin-right: 8px;
+  vertical-align: middle;
 }
 
 .body {
@@ -84,6 +110,44 @@
   font-family: var(--m2-mono);
   font-size: 16px;
   color: var(--m2-ink);
+}
+
+.cardPriceSub {
+  font-size: 11.5px;
+  color: var(--m2-mute);
+  margin-left: 4px;
+}
+
+.includesRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.includesIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--m2-ok);
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.includesText {
+  flex: 1;
+}
+
+.includesDesc {
+  color: var(--m2-mute);
+  font-size: 11.5px;
+}
+
+.legalFootnote {
+  margin: 14px 0 0;
+  font-size: 11.5px;
+  color: var(--m2-mute);
+  line-height: 1.5;
+  text-align: center;
 }
 
 .includes {

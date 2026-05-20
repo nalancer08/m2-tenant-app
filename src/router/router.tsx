@@ -9,7 +9,10 @@ import { RequireTenantAuth } from '../auth/RequireTenantAuth';
 export const router = createBrowserRouter([
   { path: '/auth/login', element: <LoginPage /> },
   { path: '/auth/signup', element: <SignupPage /> },
-  { path: '/i/:linkToken', element: <LinkLandingPage /> },
+  // Production URL: https://inquilino.metrocuadrados.com/X8K2P4
+  // The `inquilino` subdomain namespaces the route, so the 6-char token
+  // sits directly under the root (no /i/ prefix).
+  { path: '/:linkToken', element: <LinkLandingPage /> },
   {
     path: '/',
     element: <RequireTenantAuth />,

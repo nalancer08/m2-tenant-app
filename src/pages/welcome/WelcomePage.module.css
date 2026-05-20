@@ -10,6 +10,28 @@
   gap: 4px;
 }
 
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--m2-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--m2-tezontle);
+  margin-bottom: 6px;
+}
+
+.eyebrowDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--m2-tezontle);
+  box-shadow: 0 0 0 3px rgba(232, 98, 61, 0.18);
+  margin-right: 8px;
+}
+
 .title {
   margin: 0;
   font-family: var(--m2-serif);
@@ -79,7 +101,7 @@
 }
 
 .placeholderDesc {
-  margin: 0;
+  margin: 0 0 14px;
   font-size: 13px;
   color: var(--m2-mute);
   line-height: 1.5;

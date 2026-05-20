@@ -1,6 +1,7 @@
 import { api, unwrap } from './client';
+import type { LegalDocumentType } from './legal';
 
-export type ProfileType = 'broker' | 'tenant';
+export type ProfileType = 'broker' | 'tenant' | 'admin';
 
 export interface AuthResponse {
   access_token: string;
@@ -20,16 +21,25 @@ export interface MeResponse {
   profile: Record<string, unknown>;
 }
 
+export interface TenantSignupConsent {
+  document_type: LegalDocumentType;
+  version: string;
+  hash: string;
+}
+
+export interface TenantSignupBody {
+  email: string;
+  password: string;
+  /** Mandatory — tenants can only sign up via a broker invitation link. */
+  link_token: string;
+  /** All 3 legal documents must be accepted (privacy, data, terms). */
+  consents: TenantSignupConsent[];
+  /** Browser fingerprint metadata (optional) — extra audit evidence. */
+  consent_metadata?: Record<string, unknown>;
+}
+
 export const authApi = {
-  tenantSignup(body: {
-    email: string;
-    password: string;
-    first_name: string;
-    apellido_paterno: string;
-    apellido_materno?: string;
-    phone?: string;
-    link_token?: string;
-  }) {
+  tenantSignup(body: TenantSignupBody) {
     return unwrap<AuthResponse>(api.post('/auth/tenant/signup', body));
   },
   tenantLogin(body: { email: string; password: string }) {

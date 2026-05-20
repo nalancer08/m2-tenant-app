@@ -1,68 +1,75 @@
 import { useNavigate } from 'react-router';
 import { Card } from '../../components/primitives/Card';
 import { Button } from '../../components/primitives/Button';
-import { IconCheck, IconClock, IconShield } from '../../components/icons';
+import { IconArrowRight, IconCheck, IconClock, IconShield } from '../../components/icons';
 import { useAuth } from '../../auth/AuthProvider';
 import styles from './WelcomePage.module.css';
 
+/**
+ * Post-signup landing inside the tenant app. The 9-step wizard hangs off
+ * this route in Phase T9.3 — for now we show a friendly "ya estás dentro,
+ * el wizard arranca aquí" page so the signup flow has somewhere to land.
+ */
 export function WelcomePage() {
   const { me, logout } = useAuth();
   const navigate = useNavigate();
-  const profile = (me?.profile as Record<string, string>) ?? {};
-  const firstName = profile.first_name ?? 'Inquilino';
+  const email = me?.user?.email ?? '';
 
   return (
     <div className={styles.root}>
       <header className={styles.header}>
+        <span className={styles.eyebrow}>
+          <span className={styles.eyebrowDot} aria-hidden /> Cuenta creada
+        </span>
         <h1 className={styles.title}>
-          Hola, <em>{firstName}</em>
+          ¡Bienvenido a <em>Metro Cuadrado</em>!
         </h1>
         <p className={styles.subtitle}>
-          Tu cuenta esta lista. Cuando un asesor te comparta un link, llenas tu investigacion desde aqui.
+          Tu cuenta está lista{email ? ` (${email})` : ''}. En unos minutos te llevamos
+          paso a paso por la información que necesitamos para hacer tu investigación de
+          arrendamiento.
         </p>
       </header>
 
       <Card>
         <div className={styles.line}>
-          <span className={styles.lineIcon}>
-            <IconShield />
-          </span>
+          <span className={styles.lineIcon}><IconShield /></span>
           <div>
-            <span className={styles.lineTitle}>Datos protegidos</span>
+            <span className={styles.lineTitle}>Tus datos están protegidos</span>
             <p className={styles.lineDesc}>
-              Tu informacion solo se comparte con el asesor que te invito.
+              Tu información solo se comparte con el asesor que te invitó.
             </p>
           </div>
         </div>
         <div className={styles.line}>
-          <span className={styles.lineIcon}>
-            <IconClock />
-          </span>
+          <span className={styles.lineIcon}><IconClock /></span>
           <div>
-            <span className={styles.lineTitle}>24 horas</span>
+            <span className={styles.lineTitle}>~24 horas</span>
             <p className={styles.lineDesc}>
-              Tiempo promedio para tener el resultado de la investigacion.
+              Tiempo promedio del resultado una vez que terminas y pagas.
             </p>
           </div>
         </div>
         <div className={styles.line}>
-          <span className={styles.lineIcon}>
-            <IconCheck />
-          </span>
+          <span className={styles.lineIcon}><IconCheck /></span>
           <div>
-            <span className={styles.lineTitle}>Datos reutilizables</span>
+            <span className={styles.lineTitle}>Reusable</span>
             <p className={styles.lineDesc}>
-              Si aplicas a otra propiedad, reusas tu informacion sin volver a empezar.
+              Si aplicas a otra propiedad, reutilizas tu información sin empezar de cero.
             </p>
           </div>
         </div>
       </Card>
 
       <Card>
-        <span className={styles.placeholderLabel}>Tus investigaciones</span>
+        <span className={styles.placeholderLabel}>Próximamente</span>
         <p className={styles.placeholderDesc}>
-          Aun no tienes investigaciones activas. Cuando recibas el link de un asesor lo veras aqui.
+          Aquí va a vivir el wizard de captura: identidad, dirección, empleo,
+          referencias, documentos y pago. Llega en la siguiente fase.
         </p>
+        <Button fullWidth disabled rightIcon={<IconArrowRight />}>
+          Empezar investigación (próximamente)
+        </Button>
       </Card>
 
       <div className={styles.footer}>
@@ -74,7 +81,7 @@ export function WelcomePage() {
             navigate('/auth/login', { replace: true });
           }}
         >
-          Cerrar sesion
+          Cerrar sesión
         </Button>
       </div>
     </div>
