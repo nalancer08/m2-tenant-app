@@ -117,7 +117,7 @@ export interface WizardState {
   document_notes: string;
 }
 
-export const TOTAL_STEPS = 8;
+export const TOTAL_STEPS = 9;
 
 export const initialState: WizardState = {
   step: 1,
@@ -382,6 +382,10 @@ export function canAdvance(state: WizardState): boolean {
       const hasPayslip = state.documents.some((d) => d.type === 'payslip');
       return hasIneFront && hasIneBack && hasPayslip;
     }
+    case 9:
+      // Payment step renders its own CTA — Siguiente is always "ready"
+      // (the actual gate is whether Stripe returns a session URL).
+      return true;
     default:
       return false;
   }
@@ -396,4 +400,5 @@ export const STEP_TITLES: Record<number, string> = {
   6: 'Domicilio actual',
   7: 'Trabajo e ingresos',
   8: 'Documentos',
+  9: 'Pago',
 };

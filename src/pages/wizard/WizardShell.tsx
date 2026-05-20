@@ -15,6 +15,7 @@ import { Step5History } from './steps/Step5History';
 import { Step6Address } from './steps/Step6Address';
 import { Step7Employment } from './steps/Step7Employment';
 import { Step8Documents } from './steps/Step8Documents';
+import { Step9Payment } from './steps/Step9Payment';
 import {
   canAdvance,
   initialState,
@@ -168,17 +169,22 @@ export function WizardShell() {
         {error ? <div className={styles.error}>{error}</div> : null}
 
         <div className={styles.footer}>
-          <Button
-            variant="primary"
-            fullWidth
-            size="lg"
-            disabled={!canGo || saving}
-            loading={saving}
-            rightIcon={<IconArrowRight />}
-            onClick={onNext}
-          >
-            {state.step === TOTAL_STEPS ? 'Terminar y continuar' : 'Siguiente'}
-          </Button>
+          {/* Step 9 (payment) owns its own primary CTA — render only the
+              "Atrás" escape hatch here so the user can fix something in
+              step 8 if they need to. */}
+          {state.step !== TOTAL_STEPS ? (
+            <Button
+              variant="primary"
+              fullWidth
+              size="lg"
+              disabled={!canGo || saving}
+              loading={saving}
+              rightIcon={<IconArrowRight />}
+              onClick={onNext}
+            >
+              Siguiente
+            </Button>
+          ) : null}
           <Button variant="ghost" fullWidth onClick={onBack} disabled={saving}>
             Atrás
           </Button>
@@ -206,6 +212,8 @@ function renderStep(state: WizardState, dispatch: React.Dispatch<ReturnType<type
       return <Step7Employment state={state} dispatch={dispatch} />;
     case 8:
       return <Step8Documents state={state} dispatch={dispatch} />;
+    case 9:
+      return <Step9Payment state={state} dispatch={dispatch} />;
     default:
       return null;
   }
@@ -223,7 +231,6 @@ function renderStep(state: WizardState, dispatch: React.Dispatch<ReturnType<type
  */
 async function persistCurrentStep(state: WizardState): Promise<void> {
   const nextStep = Math.min(TOTAL_STEPS, state.step + 1);
-  const isLast = state.step >= TOTAL_STEPS;
 
   switch (state.step) {
     case 1:
@@ -333,16 +340,18 @@ async function persistCurrentStep(state: WizardState): Promise<void> {
       return;
 
     case 8:
-      // Documents are persisted inline by FileSlot — nothing else to upload.
-      // If the tenant added notes, mirror them to the most recent doc as a
-      // batch-level annotation; otherwise just advance.
-      await tenantMeApi.patchProfile({
-        wizard_step: TOTAL_STEPS,
-        // T9.4 ends here; T9.5 (Stripe) flips wizard_completed=true after
-        // payment. For now mark it complete so WelcomePage stops looping
-        // back into the wizard.
-        wizard_completed: isLast ? true : undefined,
-      });
+      // Documents are persisted inline by FileSlot — just advance the step
+      // counter. wizard_completed flips to true via the Stripe webhook
+      // after the tenant pays in step 9.
+      await tenantMeApi.patchProfile({ wizard_step: nextStep });
+      return;
+
+    case 9:
+      // Step 9 is the payment screen. The "Siguiente" button is hidden on
+      // this step (the page renders its own Stripe CTA). If we ever land
+      // here via the shell footer, treat it as a no-op + advance bookkeeping
+      // — the actual payment confirmation comes through the webhook.
+      await tenantMeApi.patchProfile({ wizard_step: TOTAL_STEPS });
       return;
   }
 }

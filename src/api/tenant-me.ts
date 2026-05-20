@@ -315,4 +315,14 @@ export const tenantMeApi = {
     unwrap<{ deleted: true }>(api.delete(`/tenant/me/documents/${id}`)),
   patchDocument: (id: string, body: DocumentPatchBody) =>
     unwrap<TenantDocumentRow>(api.patch(`/tenant/me/documents/${id}`, body)),
+
+  /**
+   * Create a Stripe Checkout Session for the tenant's active deal. The
+   * returned URL goes to stripe.com when configured, or to the local
+   * /pago/exito stub when STRIPE_SECRET_KEY is missing on the server.
+   */
+  createCheckoutSession: () =>
+    unwrap<{ url: string; session_id: string | null; live: boolean }>(
+      api.post('/tenant/me/checkout-session'),
+    ),
 };

@@ -1,0 +1,152 @@
+.summaryCard {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  background: var(--m2-paper);
+  border: 1px solid var(--m2-line-soft);
+  border-radius: var(--m2-radius);
+}
+
+.loading {
+  margin: 0;
+  font-size: 13px;
+  color: var(--m2-mute);
+}
+
+.lineList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lineRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--m2-line-soft);
+}
+
+.lineRow:last-child {
+  border-bottom: none;
+}
+
+.lineLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.lineName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--m2-ink);
+}
+
+.lineDesc {
+  font-size: 12px;
+  color: var(--m2-mute);
+  line-height: 1.4;
+}
+
+.linePrice {
+  font-family: var(--m2-mono);
+  font-size: 14px;
+  color: var(--m2-ink);
+  flex-shrink: 0;
+}
+
+.totalRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 14px;
+  margin-top: 4px;
+  border-top: 2px solid var(--m2-pino);
+}
+
+.totalLabel {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--m2-ink);
+}
+
+.totalValue {
+  font-family: var(--m2-mono);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--m2-ink);
+}
+
+/* ─── Trust signals ────────────────────────────────────────────── */
+
+.trustList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.trustRow {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--m2-line-soft);
+}
+
+.trustRow:last-child {
+  border-bottom: none;
+}
+
+.trustIcon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--m2-pino-200);
+  color: var(--m2-pino);
+  border-radius: 50%;
+}
+
+.trustTitle {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--m2-ink);
+  line-height: 1.4;
+}
+
+.trustDesc {
+  display: block;
+  font-size: 12px;
+  color: var(--m2-mute);
+  line-height: 1.45;
+  margin-top: 2px;
+}
+
+.error {
+  font-size: 13px;
+  color: var(--m2-err);
+  padding: 10px 12px;
+  background: rgba(178, 52, 46, 0.06);
+  border-radius: 10px;
+  border-left: 3px solid var(--m2-err);
+}
+
+.footnote {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--m2-mute);
+  line-height: 1.5;
+  text-align: center;
+}
