@@ -257,15 +257,18 @@ export interface RoommatesReplaceBody {
 export interface DocumentUploadParams {
   file: File;
   type: DocumentType;
+  /**
+   * Flag-only signal that the PDF is password-protected. We deliberately
+   * never send / store the password itself — the investigation team
+   * contacts the tenant out-of-band when they need to open the file.
+   */
   has_password?: boolean;
-  password?: string;
   notes?: string;
   onProgress?: (loadedRatio: number) => void;
 }
 
 export interface DocumentPatchBody {
   has_password?: boolean;
-  password?: string;
   notes?: string;
 }
 
@@ -291,7 +294,6 @@ export const tenantMeApi = {
     file,
     type,
     has_password,
-    password,
     notes,
     onProgress,
   }: DocumentUploadParams): Promise<TenantDocumentRow> {
@@ -299,7 +301,6 @@ export const tenantMeApi = {
     form.append('file', file);
     form.append('type', type);
     if (has_password) form.append('has_password', 'true');
-    if (password) form.append('password', password);
     if (notes) form.append('notes', notes);
     return unwrap<TenantDocumentRow>(
       api.post('/tenant/me/documents', form, {

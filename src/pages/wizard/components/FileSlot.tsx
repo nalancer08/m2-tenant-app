@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { IconCheck, IconLock, IconX } from '../../../components/icons';
-import { Field } from '../../../components/primitives/Field';
 import { Button } from '../../../components/primitives/Button';
 import type { TenantDocumentRow, DocumentType } from '../../../api/tenant-me';
 import { tenantMeApi } from '../../../api/tenant-me';
@@ -42,7 +41,6 @@ export function FileSlot({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [picked, setPicked] = useState<File | null>(null);
   const [hasPassword, setHasPassword] = useState(false);
-  const [password, setPassword] = useState('');
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -131,15 +129,13 @@ export function FileSlot({
               </span>
             </label>
             {hasPassword ? (
-              <Field
-                label="Contraseña del archivo"
-                type="password"
-                autoComplete="off"
-                placeholder="La que necesitamos para abrirlo"
-                value={password}
-                onChange={(e) => setPassword(e.currentTarget.value)}
-                hint="La guardamos cifrada con AES-256. Solo se usa para que la investigación abra el documento."
-              />
+              <p className={styles.passwordHelp}>
+                Por seguridad <strong>no guardamos contraseñas de archivos</strong>.
+                Te recomendamos quitarle la contraseña al PDF antes de subirlo
+                (en Adobe Reader: <em>Archivo → Propiedades → Seguridad</em>). Si
+                no puedes, súbelo igual: el equipo te contactará por WhatsApp para
+                abrirlo juntos.
+              </p>
             ) : null}
           </div>
         ) : null}
@@ -155,7 +151,7 @@ export function FileSlot({
         <Button
           fullWidth
           loading={uploading}
-          disabled={uploading || (hasPassword && !password)}
+          disabled={uploading}
           onClick={async () => {
             setError(null);
             setUploading(true);
@@ -165,12 +161,10 @@ export function FileSlot({
                 file: picked,
                 type,
                 has_password: hasPassword,
-                password: hasPassword ? password : undefined,
                 onProgress: setProgress,
               });
               setPicked(null);
               setHasPassword(false);
-              setPassword('');
               onChange(doc);
             } catch (err) {
               const e = err as { response?: { data?: { message?: string } } };
