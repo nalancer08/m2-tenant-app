@@ -1,19 +1,37 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
+import { useQuery } from '@tanstack/react-query';
 import { Card } from '../../components/primitives/Card';
 import { Button } from '../../components/primitives/Button';
 import { IconArrowRight, IconCheck, IconClock, IconShield } from '../../components/icons';
+import { tenantMeApi } from '../../api/tenant-me';
 import { useAuth } from '../../auth/AuthProvider';
 import styles from './WelcomePage.module.css';
 
 /**
- * Post-signup landing inside the tenant app. The 9-step wizard hangs off
- * this route in Phase T9.3 — for now we show a friendly "ya estás dentro,
- * el wizard arranca aquí" page so the signup flow has somewhere to land.
+ * Post-signup landing. Loads the tenant aggregate and, if the wizard
+ * isn't complete yet, redirects straight to /wizard. On a cold post-
+ * signup load this means the user blinks here for a moment and lands
+ * in Step 1 — the "you're done" state below only renders once the
+ * wizard is completed.
  */
 export function WelcomePage() {
   const { me, logout } = useAuth();
   const navigate = useNavigate();
   const email = me?.user?.email ?? '';
+
+  const fullQ = useQuery({
+    queryKey: ['tenant-me-full'],
+    queryFn: () => tenantMeApi.full(),
+    staleTime: 30_000,
+  });
+
+  useEffect(() => {
+    if (!fullQ.data) return;
+    if (!fullQ.data.tenant.wizard_completed) {
+      navigate('/wizard', { replace: true });
+    }
+  }, [fullQ.data, navigate]);
 
   return (
     <div className={styles.root}>
@@ -25,9 +43,8 @@ export function WelcomePage() {
           ¡Bienvenido a <em>Metro Cuadrado</em>!
         </h1>
         <p className={styles.subtitle}>
-          Tu cuenta está lista{email ? ` (${email})` : ''}. En unos minutos te llevamos
-          paso a paso por la información que necesitamos para hacer tu investigación de
-          arrendamiento.
+          Tu cuenta está lista{email ? ` (${email})` : ''}. En seguida arrancamos la
+          captura de información para tu investigación.
         </p>
       </header>
 
@@ -62,13 +79,17 @@ export function WelcomePage() {
       </Card>
 
       <Card>
-        <span className={styles.placeholderLabel}>Próximamente</span>
+        <span className={styles.placeholderLabel}>Continúa</span>
         <p className={styles.placeholderDesc}>
-          Aquí va a vivir el wizard de captura: identidad, dirección, empleo,
-          referencias, documentos y pago. Llega en la siguiente fase.
+          Empezamos por tu régimen fiscal, datos personales y tu situación actual.
+          Puedes pausar y volver cuando quieras — guardamos tu avance en cada paso.
         </p>
-        <Button fullWidth disabled rightIcon={<IconArrowRight />}>
-          Empezar investigación (próximamente)
+        <Button
+          fullWidth
+          rightIcon={<IconArrowRight />}
+          onClick={() => navigate('/wizard')}
+        >
+          Empezar investigación
         </Button>
       </Card>
 

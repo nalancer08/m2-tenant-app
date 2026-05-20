@@ -1,0 +1,61 @@
+.card {
+  border: 1px solid rgba(232, 98, 61, 0.3);
+  background: rgba(232, 98, 61, 0.05);
+  border-radius: var(--m2-radius);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--m2-tezontle);
+  box-shadow: 0 0 0 3px rgba(232, 98, 61, 0.18);
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--m2-ink);
+}
+
+.intro {
+  margin: 0;
+  font-size: 13px;
+  color: var(--m2-ink);
+  line-height: 1.5;
+}
+
+.list {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12.5px;
+  color: var(--m2-ink);
+  line-height: 1.5;
+}
+
+.list li::marker {
+  color: var(--m2-tezontle);
+}
+
+.footnote {
+  font-size: 11.5px;
+  color: var(--m2-mute);
+  line-height: 1.5;
+  padding-top: 4px;
+  border-top: 1px dashed rgba(232, 98, 61, 0.25);
+}
