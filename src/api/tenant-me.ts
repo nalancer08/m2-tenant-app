@@ -140,13 +140,43 @@ export interface DealRowForTenant {
   } | null;
 }
 
+export type DocumentType =
+  | 'ine_front'
+  | 'ine_back'
+  | 'selfie'
+  | 'passport'
+  | 'payslip'
+  | 'bank_statement'
+  | 'proof_of_address'
+  | 'tax_return'
+  | 'acta_constitutiva'
+  | 'poder_notarial'
+  | 'constancia_fiscal'
+  | 'opinion_cumplimiento'
+  | 'additional'
+  | 'other';
+
+export interface TenantDocumentRow {
+  id: string;
+  tenant_id: string;
+  type: DocumentType;
+  file_name: string;
+  file_url: string;
+  file_size?: number | null;
+  mime_type?: string | null;
+  has_password: boolean;
+  notes?: string | null;
+  verified: boolean;
+  created_at: string;
+}
+
 export interface FullTenantResponse {
   tenant: TenantRow;
   current_address: TenantAddressRow | null;
   current_employment: TenantEmploymentRow | null;
   references: TenantReferenceRow[];
   consents: unknown[];
-  documents: unknown[];
+  documents: TenantDocumentRow[];
   roommates: TenantRoommateRow[];
   deals: DealRowForTenant[];
 }
@@ -224,6 +254,21 @@ export interface RoommatesReplaceBody {
 
 // ─── Client ──────────────────────────────────────────────────────────
 
+export interface DocumentUploadParams {
+  file: File;
+  type: DocumentType;
+  has_password?: boolean;
+  password?: string;
+  notes?: string;
+  onProgress?: (loadedRatio: number) => void;
+}
+
+export interface DocumentPatchBody {
+  has_password?: boolean;
+  password?: string;
+  notes?: string;
+}
+
 export const tenantMeApi = {
   full: () => unwrap<FullTenantResponse>(api.get('/tenant/me/full')),
   patchProfile: (body: ProfilePatchBody) =>
@@ -236,4 +281,37 @@ export const tenantMeApi = {
     unwrap<TenantReferenceRow[]>(api.put('/tenant/me/references', body)),
   replaceRoommates: (body: RoommatesReplaceBody) =>
     unwrap<TenantRoommateRow[]>(api.put('/tenant/me/roommates', body)),
+
+  /**
+   * Multipart upload of a single document. Builds the FormData explicitly
+   * so axios sets the right boundary + emits progress events the wizard
+   * can show in real time.
+   */
+  uploadDocument({
+    file,
+    type,
+    has_password,
+    password,
+    notes,
+    onProgress,
+  }: DocumentUploadParams): Promise<TenantDocumentRow> {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('type', type);
+    if (has_password) form.append('has_password', 'true');
+    if (password) form.append('password', password);
+    if (notes) form.append('notes', notes);
+    return unwrap<TenantDocumentRow>(
+      api.post('/tenant/me/documents', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (e) => {
+          if (onProgress && e.total) onProgress(e.loaded / e.total);
+        },
+      }),
+    );
+  },
+  deleteDocument: (id: string) =>
+    unwrap<{ deleted: true }>(api.delete(`/tenant/me/documents/${id}`)),
+  patchDocument: (id: string, body: DocumentPatchBody) =>
+    unwrap<TenantDocumentRow>(api.patch(`/tenant/me/documents/${id}`, body)),
 };

@@ -9,11 +9,10 @@ import { useAuth } from '../../auth/AuthProvider';
 import styles from './WelcomePage.module.css';
 
 /**
- * Post-signup landing. Loads the tenant aggregate and, if the wizard
- * isn't complete yet, redirects straight to /wizard. On a cold post-
- * signup load this means the user blinks here for a moment and lands
- * in Step 1 — the "you're done" state below only renders once the
- * wizard is completed.
+ * Post-signup landing. Two states:
+ *   1. Wizard not yet completed → redirect into /wizard.
+ *   2. Wizard completed → show "tu investigación está en proceso"
+ *      placeholder. Status detail + verdict UI lives in T9.6.
  */
 export function WelcomePage() {
   const { me, logout } = useAuth();
@@ -33,18 +32,39 @@ export function WelcomePage() {
     }
   }, [fullQ.data, navigate]);
 
+  const completed = !!fullQ.data?.tenant.wizard_completed;
+  const deal = fullQ.data?.deals.find((d) => d.status !== 'cancelled') ?? null;
+
   return (
     <div className={styles.root}>
       <header className={styles.header}>
         <span className={styles.eyebrow}>
-          <span className={styles.eyebrowDot} aria-hidden /> Cuenta creada
+          <span className={styles.eyebrowDot} aria-hidden />
+          {completed ? 'Investigación en proceso' : 'Cuenta creada'}
         </span>
         <h1 className={styles.title}>
-          ¡Bienvenido a <em>Metro Cuadrado</em>!
+          {completed ? (
+            <>
+              Tu investigación está <em>en curso</em>
+            </>
+          ) : (
+            <>
+              ¡Bienvenido a <em>Metro Cuadrado</em>!
+            </>
+          )}
         </h1>
         <p className={styles.subtitle}>
-          Tu cuenta está lista{email ? ` (${email})` : ''}. En seguida arrancamos la
-          captura de información para tu investigación.
+          {completed ? (
+            <>
+              Recibimos tu información{deal ? ` para el folio ${deal.folio}` : ''}.
+              Te avisaremos por correo cuando esté listo el resultado.
+            </>
+          ) : (
+            <>
+              Tu cuenta está lista{email ? ` (${email})` : ''}. En seguida arrancamos la
+              captura de información para tu investigación.
+            </>
+          )}
         </p>
       </header>
 
@@ -78,20 +98,38 @@ export function WelcomePage() {
         </div>
       </Card>
 
-      <Card>
-        <span className={styles.placeholderLabel}>Continúa</span>
-        <p className={styles.placeholderDesc}>
-          Empezamos por tu régimen fiscal, datos personales y tu situación actual.
-          Puedes pausar y volver cuando quieras — guardamos tu avance en cada paso.
-        </p>
-        <Button
-          fullWidth
-          rightIcon={<IconArrowRight />}
-          onClick={() => navigate('/wizard')}
-        >
-          Empezar investigación
-        </Button>
-      </Card>
+      {!completed ? (
+        <Card>
+          <span className={styles.placeholderLabel}>Continúa</span>
+          <p className={styles.placeholderDesc}>
+            Empezamos por tu régimen fiscal, datos personales y tu situación actual.
+            Puedes pausar y volver cuando quieras — guardamos tu avance en cada paso.
+          </p>
+          <Button
+            fullWidth
+            rightIcon={<IconArrowRight />}
+            onClick={() => navigate('/wizard')}
+          >
+            Empezar investigación
+          </Button>
+        </Card>
+      ) : (
+        <Card>
+          <span className={styles.placeholderLabel}>Próximo paso</span>
+          <p className={styles.placeholderDesc}>
+            Falta el pago de la investigación. Habilitamos el cobro con Stripe en
+            la siguiente fase. Mientras tanto, tu información ya quedó archivada y
+            podemos reanudar en cualquier momento.
+          </p>
+          <Button
+            fullWidth
+            variant="ghost"
+            onClick={() => navigate('/wizard')}
+          >
+            Revisar mi información
+          </Button>
+        </Card>
+      )}
 
       <div className={styles.footer}>
         <Button

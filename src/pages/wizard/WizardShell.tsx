@@ -14,6 +14,7 @@ import { Step4References } from './steps/Step4References';
 import { Step5History } from './steps/Step5History';
 import { Step6Address } from './steps/Step6Address';
 import { Step7Employment } from './steps/Step7Employment';
+import { Step8Documents } from './steps/Step8Documents';
 import {
   canAdvance,
   initialState,
@@ -203,6 +204,8 @@ function renderStep(state: WizardState, dispatch: React.Dispatch<ReturnType<type
       return <Step6Address state={state} dispatch={dispatch} />;
     case 7:
       return <Step7Employment state={state} dispatch={dispatch} />;
+    case 8:
+      return <Step8Documents state={state} dispatch={dispatch} />;
     default:
       return null;
   }
@@ -326,9 +329,19 @@ async function persistCurrentStep(state: WizardState): Promise<void> {
         hr_phone: state.hr_phone.trim() || undefined,
         buro_consent: state.buro_consent,
       });
-      // T9.3 ends at step 7; documents (8) + pago (9) come later.
+      await tenantMeApi.patchProfile({ wizard_step: nextStep });
+      return;
+
+    case 8:
+      // Documents are persisted inline by FileSlot — nothing else to upload.
+      // If the tenant added notes, mirror them to the most recent doc as a
+      // batch-level annotation; otherwise just advance.
       await tenantMeApi.patchProfile({
-        wizard_step: isLast ? TOTAL_STEPS : nextStep,
+        wizard_step: TOTAL_STEPS,
+        // T9.4 ends here; T9.5 (Stripe) flips wizard_completed=true after
+        // payment. For now mark it complete so WelcomePage stops looping
+        // back into the wizard.
+        wizard_completed: isLast ? true : undefined,
       });
       return;
   }

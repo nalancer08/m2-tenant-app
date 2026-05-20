@@ -7,6 +7,7 @@ import type {
   IncomeSource,
   LivingSituation,
   RegimenFiscal,
+  TenantDocumentRow,
 } from '../../api/tenant-me';
 
 /**
@@ -110,9 +111,13 @@ export interface WizardState {
   hr_contact_name: string;
   hr_phone: string;
   buro_consent: boolean;
+
+  // Step 8 — Documentos
+  documents: TenantDocumentRow[];
+  document_notes: string;
 }
 
-export const TOTAL_STEPS = 7;
+export const TOTAL_STEPS = 8;
 
 export const initialState: WizardState = {
   step: 1,
@@ -171,6 +176,8 @@ export const initialState: WizardState = {
   hr_contact_name: '',
   hr_phone: '',
   buro_consent: false,
+  documents: [],
+  document_notes: '',
 };
 
 export type Action =
@@ -207,7 +214,7 @@ function clampStep(n: number): number {
  * with all their previous answers pre-filled.
  */
 function hydrateFromServer(_state: WizardState, data: FullTenantResponse): WizardState {
-  const { tenant, current_address, current_employment, references, roommates, deals } = data;
+  const { tenant, current_address, current_employment, references, roommates, deals, documents } = data;
   const deal = deals.find((d) => d.status !== 'cancelled') ?? deals[0] ?? null;
 
   // Infer nationality_kind + has_curp from whatever data the user already
@@ -293,6 +300,8 @@ function hydrateFromServer(_state: WizardState, data: FullTenantResponse): Wizar
     hr_contact_name: current_employment?.hr_contact_name ?? '',
     hr_phone: current_employment?.hr_phone ?? '',
     buro_consent: current_employment?.buro_consent ?? false,
+    documents: documents ?? [],
+    document_notes: '',
   };
 }
 
@@ -365,6 +374,14 @@ export function canAdvance(state: WizardState): boolean {
       // buró: required (it's the consent for the credit check)
       return state.buro_consent === true;
     }
+    case 8: {
+      // Required: INE front + INE back + at least 1 payslip. Additional
+      // docs and notes are optional.
+      const hasIneFront = state.documents.some((d) => d.type === 'ine_front');
+      const hasIneBack = state.documents.some((d) => d.type === 'ine_back');
+      const hasPayslip = state.documents.some((d) => d.type === 'payslip');
+      return hasIneFront && hasIneBack && hasPayslip;
+    }
     default:
       return false;
   }
@@ -378,4 +395,5 @@ export const STEP_TITLES: Record<number, string> = {
   5: 'Historial',
   6: 'Domicilio actual',
   7: 'Trabajo e ingresos',
+  8: 'Documentos',
 };
