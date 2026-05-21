@@ -1,0 +1,229 @@
+/* DateField — skin Cobalto sobre react-day-picker */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  position: relative;
+  font-family: var(--m2-sans);
+}
+
+.label {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--m2-mute);
+}
+
+/* Trigger button — looks like a Field input */
+
+.trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 14px;
+  background: var(--m2-paper);
+  border: 1px solid var(--m2-line-soft);
+  border-radius: 12px;
+  color: var(--m2-mute);
+  font-family: var(--m2-sans);
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.trigger:hover {
+  background: #fff;
+}
+
+.trigger:focus {
+  outline: none;
+  border-color: var(--m2-pino);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(30, 58, 107, 0.12);
+}
+
+.trigger_filled {
+  color: var(--m2-ink);
+}
+
+.trigger_error,
+.trigger_error:focus {
+  border-color: var(--m2-err);
+}
+
+.triggerText {
+  flex: 1;
+  min-width: 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.triggerIcon {
+  display: inline-flex;
+  color: var(--m2-mute);
+  flex-shrink: 0;
+}
+
+/* Popover */
+
+.popover {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  max-width: 360px;
+  background: #fff;
+  border: 1px solid var(--m2-line-soft);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(10, 31, 63, 0.18);
+  padding: 12px;
+  animation: dateFadeIn 0.12s ease;
+}
+
+@keyframes dateFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--m2-mute-2);
+}
+
+.error {
+  font-size: 12px;
+  color: var(--m2-err);
+}
+
+/* ─── DayPicker overrides ───────────────────────────────────────── */
+
+.dpRoot {
+  --rdp-accent-color: var(--m2-tezontle);
+  --rdp-accent-background-color: rgba(232, 98, 61, 0.12);
+  font-family: var(--m2-sans);
+  color: var(--m2-ink);
+  margin: 0;
+}
+
+.dpMonths {
+  display: flex;
+  justify-content: center;
+}
+
+.dpCaption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 4px 12px;
+  font-family: var(--m2-serif);
+  font-size: 16px;
+}
+
+.dpDropdowns {
+  display: flex;
+  gap: 8px;
+}
+
+.dpDropdown {
+  font-family: var(--m2-sans);
+  font-size: 14px;
+  padding: 6px 10px;
+  border: 1px solid var(--m2-line-soft);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--m2-ink);
+  cursor: pointer;
+}
+
+.dpDropdown:focus {
+  outline: none;
+  border-color: var(--m2-pino);
+}
+
+.dpWeekdays {
+  display: flex;
+  margin-top: 4px;
+}
+
+.dpWeekday {
+  flex: 1;
+  text-align: center;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  color: var(--m2-mute);
+  padding: 6px 0;
+}
+
+.dpWeek {
+  display: flex;
+}
+
+.dpDay {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+
+.dpDayButton {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--m2-ink);
+  font-size: 13.5px;
+  font-family: var(--m2-sans);
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.dpDayButton:hover:not(:disabled) {
+  background: rgba(30, 58, 107, 0.08);
+}
+
+.dpSelected .dpDayButton,
+.dpSelected.dpDay .dpDayButton {
+  background: var(--m2-tezontle);
+  color: #fff;
+  font-weight: 600;
+}
+
+.dpToday .dpDayButton {
+  font-weight: 600;
+  color: var(--m2-tezontle);
+}
+
+.dpOutside .dpDayButton {
+  color: var(--m2-mute-2);
+}
+
+.dpDisabled .dpDayButton {
+  color: var(--m2-mute-2);
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.dpChevron {
+  fill: var(--m2-ink);
+  width: 14px;
+  height: 14px;
+}

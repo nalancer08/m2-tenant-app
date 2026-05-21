@@ -4,7 +4,7 @@
   min-height: 100vh;
   max-width: 480px;
   margin: 0 auto;
-  background: var(--m2-cal);
+  background: transparent;
 }
 
 .header {

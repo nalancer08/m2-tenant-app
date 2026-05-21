@@ -1,4 +1,6 @@
 import { Field } from '../../../components/primitives/Field';
+import { PhoneField } from '../../../components/primitives/PhoneField';
+import { YearsMonthsField } from '../../../components/primitives/YearsMonthsField';
 import { ChoiceCard } from '../components/ChoiceCard';
 import { LIVING_SITUATION_OPTIONS, MEXICO_STATES } from '../catalogs';
 import type { Action, WizardState } from '../state';
@@ -102,39 +104,32 @@ export function Step6Address({ state, dispatch }: StepProps) {
 
       <div className={styles.section}>
         <span className={styles.sectionLabel}>Antigüedad</span>
-        <Field
-          label="¿Hace cuántos meses vives aquí?"
-          type="number"
-          inputMode="numeric"
-          placeholder="24"
-          value={state.time_at_address_months?.toString() ?? ''}
-          onChange={(e) => {
-            const v = e.currentTarget.value === '' ? null : Number(e.currentTarget.value);
-            set({ time_at_address_months: Number.isFinite(v) && v !== null ? v : null });
-          }}
-          hint="Señal de estabilidad. Si tienes ~2 años aquí, escribe 24."
+        <YearsMonthsField
+          label="¿Hace cuánto vives aquí?"
+          value={state.time_at_address_months}
+          onChange={(months) => set({ time_at_address_months: months })}
+          hint="Señal de estabilidad para la investigación."
         />
       </div>
 
       {state.living_situation === 'rentado' ? (
         <div className={styles.section}>
-          <span className={styles.sectionLabel}>Tu arrendador actual</span>
+          <span className={styles.sectionLabel}>Tu arrendador actual (opcional)</span>
           <p className={styles.sectionIntro}>
-            Es la referencia más valiosa que tenemos. Le hablamos para confirmar
-            que pagas a tiempo. <strong>No es opcional.</strong>
+            Si nos compartes su contacto, es la referencia más valiosa que
+            tenemos — le hablamos para confirmar que pagas a tiempo. Si
+            prefieres no compartirlo, déjalo en blanco.
           </p>
           <Field
-            label="Nombre completo del arrendador"
+            label="Nombre del arrendador"
             placeholder="Carlos López"
             value={state.current_landlord_name}
             onChange={(e) => set({ current_landlord_name: e.currentTarget.value })}
           />
-          <Field
-            label="Teléfono (con lada)"
-            placeholder="+52 55 1234 5678"
-            inputMode="tel"
+          <PhoneField
+            label="Teléfono"
             value={state.current_landlord_phone}
-            onChange={(e) => set({ current_landlord_phone: e.currentTarget.value })}
+            onChange={(phone) => set({ current_landlord_phone: phone })}
           />
         </div>
       ) : null}

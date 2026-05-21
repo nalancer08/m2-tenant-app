@@ -351,18 +351,14 @@ export function canAdvance(state: WizardState): boolean {
     case 5:
       return state.education_level !== null && state.civil_status !== null;
     case 6: {
+      // Solo dirección + situación son obligatorias. Arrendador (nombre +
+      // teléfono) es opcional: si lo dan, mejor para la investigación;
+      // si no, el equipo se las arregla con las otras referencias.
       if (state.living_situation === null) return false;
       const a = state.address;
       const addrOk =
         a.street.trim() && a.city.trim() && a.state && a.postal_code.trim();
-      if (!addrOk) return false;
-      if (state.living_situation === 'rentado') {
-        return (
-          state.current_landlord_name.trim().length > 0 &&
-          state.current_landlord_phone.trim().length > 0
-        );
-      }
-      return true;
+      return Boolean(addrOk);
     }
     case 7: {
       if (state.employment_status === null) return false;

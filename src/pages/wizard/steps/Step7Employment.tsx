@@ -1,4 +1,7 @@
 import { Field } from '../../../components/primitives/Field';
+import { MoneyField } from '../../../components/primitives/MoneyField';
+import { PhoneField } from '../../../components/primitives/PhoneField';
+import { YearsMonthsField } from '../../../components/primitives/YearsMonthsField';
 import { ChoiceCard } from '../components/ChoiceCard';
 import {
   EMPLOYMENT_STATUS_OPTIONS,
@@ -70,22 +73,24 @@ export function Step7Employment({ state, dispatch }: StepProps) {
             </select>
           </label>
           <Field
-            label="Ocupación / actividad"
-            placeholder="Software Engineer"
-            value={state.occupation}
-            onChange={(e) => set({ occupation: e.currentTarget.value })}
-          />
-          <Field
             label="Empresa"
             placeholder="Acme S.A. de C.V."
             value={state.company_name}
             onChange={(e) => set({ company_name: e.currentTarget.value })}
           />
           <Field
-            label="Puesto actual"
-            placeholder="Tech Lead"
+            label="Puesto / ocupación"
+            placeholder="Software Engineer"
             value={state.position}
-            onChange={(e) => set({ position: e.currentTarget.value })}
+            onChange={(e) =>
+              set({
+                position: e.currentTarget.value,
+                // Mantenemos ambos campos sincronizados — el backend tiene
+                // dos columnas históricas (position / occupation). Para el
+                // usuario es un solo concepto.
+                occupation: e.currentTarget.value,
+              })
+            }
           />
           <Field
             label="Página web (opcional)"
@@ -99,31 +104,35 @@ export function Step7Employment({ state, dispatch }: StepProps) {
             value={state.work_address}
             onChange={(e) => set({ work_address: e.currentTarget.value })}
           />
-          <Field
-            label="Antigüedad en este empleo (meses)"
-            type="number"
-            inputMode="numeric"
-            placeholder="24"
-            value={state.tenure_months?.toString() ?? ''}
-            onChange={(e) => {
-              const v = e.currentTarget.value === '' ? null : Number(e.currentTarget.value);
-              set({ tenure_months: Number.isFinite(v) && v !== null ? v : null });
-            }}
-            hint="Señal de estabilidad. Si tienes ~2 años en la chamba, escribe 24."
+          <YearsMonthsField
+            label="Antigüedad en este empleo"
+            value={state.tenure_months}
+            onChange={(months) => set({ tenure_months: months })}
+            hint="Señal de estabilidad para la investigación."
           />
+        </div>
+      ) : null}
+
+      {showWorkFields ? (
+        <div className={styles.section}>
+          <span className={styles.sectionLabel}>
+            Contacto laboral (opcional)
+          </span>
+          <p className={styles.sectionIntro}>
+            Si nos compartes a tu jefe directo o RH, le hablamos para
+            verificar tu empleo. Si prefieres no compartirlo, déjalo en
+            blanco — lo confirmamos con tus comprobantes.
+          </p>
           <Field
-            label="Contacto de RH o jefe directo (nombre)"
+            label="Nombre"
             placeholder="Marcela Trejo"
             value={state.hr_contact_name}
             onChange={(e) => set({ hr_contact_name: e.currentTarget.value })}
-            hint="Para verificar el empleo. Es distinto de tus referencias personales."
           />
-          <Field
-            label="Teléfono de contacto laboral"
-            placeholder="+52 55 1234 5678"
-            inputMode="tel"
+          <PhoneField
+            label="Teléfono"
             value={state.hr_phone}
-            onChange={(e) => set({ hr_phone: e.currentTarget.value })}
+            onChange={(phone) => set({ hr_phone: phone })}
           />
         </div>
       ) : null}
@@ -159,34 +168,13 @@ export function Step7Employment({ state, dispatch }: StepProps) {
           />
         ) : null}
 
-        <div className={styles.moneyRow}>
-          <span className={styles.moneyLabel}>Ingreso neto mensual</span>
-          <div className={styles.moneyInputWrap}>
-            <span className={styles.moneyPrefix}>$</span>
-            <input
-              className={styles.moneyInput}
-              type="number"
-              inputMode="numeric"
-              placeholder="45000"
-              value={
-                state.monthly_net_income_cents !== null
-                  ? Math.round(state.monthly_net_income_cents / 100).toString()
-                  : ''
-              }
-              onChange={(e) => {
-                const pesos = e.currentTarget.value === '' ? null : Number(e.currentTarget.value);
-                set({
-                  monthly_net_income_cents:
-                    pesos !== null && Number.isFinite(pesos) ? Math.round(pesos * 100) : null,
-                });
-              }}
-            />
-            <span className={styles.moneySuffix}>MXN</span>
-          </div>
-          <span className={styles.hint}>
-            Después de impuestos. En pesos enteros — los centavos se asumen 0.
-          </span>
-        </div>
+        <MoneyField
+          label="Ingreso neto mensual"
+          value={state.monthly_net_income_cents}
+          onChange={(cents) => set({ monthly_net_income_cents: cents })}
+          hint="Después de impuestos. Los centavos se asumen 0."
+          placeholder="45,000"
+        />
       </div>
 
       <div className={styles.section}>

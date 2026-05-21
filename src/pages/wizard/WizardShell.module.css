@@ -4,7 +4,9 @@
   min-height: 100vh;
   max-width: 480px;
   margin: 0 auto;
-  background: var(--m2-cal);
+  /* Transparente para dejar pasar el halo del body — antes era cal
+     opaco y "tapaba" el ambiente cremoso. */
+  background: transparent;
 }
 
 .header {
@@ -13,7 +15,11 @@
   align-items: center;
   gap: 14px;
   padding: 16px 18px 12px;
-  background: var(--m2-cal);
+  /* Glassmorphism muy sutil: deja ver el halo del body pero mantiene
+     el header legible al hacer scroll. */
+  background: rgba(250, 248, 244, 0.85);
+  backdrop-filter: saturate(140%) blur(8px);
+  -webkit-backdrop-filter: saturate(140%) blur(8px);
   border-bottom: 1px solid var(--m2-line-soft);
   position: sticky;
   top: 0;

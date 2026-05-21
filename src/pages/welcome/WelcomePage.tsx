@@ -115,16 +115,16 @@ export function WelcomePage() {
         </Card>
       ) : (
         <Card>
-          <span className={styles.placeholderLabel}>Próximo paso</span>
+          <span className={styles.placeholderLabel}>Tu perfil</span>
           <p className={styles.placeholderDesc}>
-            Falta el pago de la investigación. Habilitamos el cobro con Stripe en
-            la siguiente fase. Mientras tanto, tu información ya quedó archivada y
-            podemos reanudar en cualquier momento.
+            Ya nos compartiste toda tu información. Aquí abajo puedes revisarla
+            cuando quieras. Si encuentras algo que corregir, escríbele a tu
+            asesor para que pueda destrabarte el paso.
           </p>
           <Button
             fullWidth
-            variant="ghost"
-            onClick={() => navigate('/wizard')}
+            rightIcon={<IconArrowRight />}
+            onClick={() => navigate('/mi-informacion')}
           >
             Revisar mi información
           </Button>

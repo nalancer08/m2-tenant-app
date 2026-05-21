@@ -1,3 +1,4 @@
+import { DateField } from '../../../components/primitives/DateField';
 import { Field } from '../../../components/primitives/Field';
 import { ChoiceCard } from '../components/ChoiceCard';
 import { COUNTRIES_COMMON, GENDER_OPTIONS, MEXICO_STATES } from '../catalogs';
@@ -100,11 +101,10 @@ export function Step3Personal({ state, dispatch }: StepProps) {
           value={state.apellido_materno}
           onChange={(e) => set({ apellido_materno: e.currentTarget.value })}
         />
-        <Field
+        <DateField
           label="Fecha de nacimiento"
-          type="date"
           value={state.date_of_birth}
-          onChange={(e) => set({ date_of_birth: e.currentTarget.value })}
+          onChange={(value) => set({ date_of_birth: value })}
         />
 
         <label className={styles.selectField}>
@@ -125,6 +125,10 @@ export function Step3Personal({ state, dispatch }: StepProps) {
               </option>
             ))}
           </select>
+          <span className={styles.selectHint}>
+            Lo usamos para calcular tu CURP y RFC — debe coincidir con tu
+            identificación oficial.
+          </span>
         </label>
       </div>
 
@@ -162,7 +166,18 @@ export function Step3Personal({ state, dispatch }: StepProps) {
               label="CURP"
               placeholder="HERL900101MDFRYC09"
               value={state.curp}
-              onChange={(e) => set({ curp: e.currentTarget.value.toUpperCase() })}
+              maxLength={18}
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
+              onChange={(e) =>
+                set({
+                  curp: e.currentTarget.value
+                    .toUpperCase()
+                    .replace(/[^A-Z0-9]/g, '')
+                    .slice(0, 18),
+                })
+              }
               hint="18 caracteres. Lo encuentras en tu acta o en gob.mx/curp"
             />
           ) : null}
@@ -172,7 +187,18 @@ export function Step3Personal({ state, dispatch }: StepProps) {
               label="RFC"
               placeholder="HERL900101AB1"
               value={state.rfc}
-              onChange={(e) => set({ rfc: e.currentTarget.value.toUpperCase() })}
+              maxLength={13}
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
+              onChange={(e) =>
+                set({
+                  rfc: e.currentTarget.value
+                    .toUpperCase()
+                    .replace(/[^A-Z0-9]/g, '')
+                    .slice(0, 13),
+                })
+              }
               hint="12 caracteres (persona moral) o 13 (persona física con homoclave)"
             />
           ) : null}

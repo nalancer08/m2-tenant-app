@@ -16,9 +16,14 @@
   transition: border-color 0.15s ease, background 0.15s ease;
 }
 
-.pickerBtn:hover {
+.pickerBtn:hover:not(:disabled) {
   border-color: var(--m2-pino);
   background: #fff;
+}
+
+.pickerBtn:disabled {
+  cursor: progress;
+  opacity: 0.85;
 }
 
 .pickerHead {
@@ -34,28 +39,20 @@
   color: var(--m2-mute);
 }
 
-/* ─── Picked-but-not-uploaded state + uploaded state ──────────────── */
+/* ─── Uploaded state ──────────────────────────────────────────────── */
 
 .slot {
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 14px;
-  background: var(--m2-paper);
+  background: #fff;
   border: 1px solid var(--m2-line-soft);
   border-radius: var(--m2-radius);
 }
 
 .slot_uploaded {
-  border-color: var(--m2-ok);
-  background: #fff;
-}
-
-.slotHead {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  border-color: rgba(44, 122, 82, 0.4);
 }
 
 .label {
@@ -71,6 +68,28 @@
   font-weight: 400;
 }
 
+.uploadedRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.uploadedText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.uploadedLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--m2-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .checkIcon {
   width: 24px;
   height: 24px;
@@ -80,23 +99,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.previewRow,
-.uploadedRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 8px 12px;
-  border: 1px solid var(--m2-line-soft);
-  border-radius: 10px;
-  background: var(--m2-cal);
+  flex-shrink: 0;
 }
 
 .fileName {
-  font-size: 12.5px;
-  font-family: var(--m2-mono);
+  font-size: 13.5px;
+  font-family: var(--m2-sans);
   color: var(--m2-ink);
   white-space: nowrap;
   overflow: hidden;
@@ -105,46 +113,35 @@
 }
 
 .fileSize {
-  font-size: 11px;
+  font-size: 11.5px;
   color: var(--m2-mute);
   font-family: var(--m2-mono);
-  flex-shrink: 0;
+  margin-left: 4px;
 }
 
-.linkBtn {
+.removeIconBtn {
   background: transparent;
   border: none;
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--m2-pino);
-  cursor: pointer;
-  font-family: var(--m2-sans);
-  flex-shrink: 0;
-}
-
-.linkBtn:hover {
-  color: var(--m2-pino-600);
-}
-
-.removeBtn {
-  background: transparent;
-  border: 1px solid var(--m2-line-soft);
-  border-radius: 8px;
-  padding: 6px 10px;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  justify-content: center;
   color: var(--m2-mute);
   cursor: pointer;
-  font-family: var(--m2-sans);
-  align-self: flex-start;
+  flex-shrink: 0;
+  transition: background 0.12s ease, color 0.12s ease;
 }
 
-.removeBtn:hover {
-  background: rgba(178, 52, 46, 0.06);
-  border-color: rgba(178, 52, 46, 0.3);
+.removeIconBtn:hover:not(:disabled) {
+  background: rgba(178, 52, 46, 0.08);
   color: var(--m2-err);
+}
+
+.removeIconBtn:disabled {
+  opacity: 0.5;
+  cursor: progress;
 }
 
 .error {
@@ -153,43 +150,27 @@
   color: var(--m2-err);
 }
 
-.passwordTag {
-  margin: 0;
-  font-size: 11.5px;
-  color: var(--m2-mute);
+/* ─── Inline password toggle (lives on the uploaded row) ──────────── */
+
+.pwInlineToggle {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-}
-
-/* ─── Password section (inside slot when picked + allowPassword) ──── */
-
-.passwordSection {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-top: 6px;
-  border-top: 1px dashed var(--m2-line-soft);
-}
-
-.passwordToggle {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
   padding: 2px 0;
+  position: relative;
 }
 
-.passwordToggle input {
+.pwInlineToggle input {
   position: absolute;
   opacity: 0;
   pointer-events: none;
 }
 
-.passwordToggleBox {
-  width: 20px;
-  height: 20px;
-  border-radius: 6px;
+.pwInlineBox {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
   border: 1.5px solid rgba(10, 31, 63, 0.25);
   background: var(--m2-paper);
   display: inline-flex;
@@ -199,23 +180,27 @@
   flex-shrink: 0;
 }
 
-.passwordToggle input:checked + .passwordToggleBox {
+.pwInlineToggle input:checked + .pwInlineBox {
   background: var(--m2-pino);
   border-color: var(--m2-pino);
 }
 
-.passwordToggleText {
-  font-size: 13px;
-  color: var(--m2-ink);
+.pwInlineText {
+  font-size: 12.5px;
+  color: var(--m2-mute);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
-/* ─── Upload progress ─────────────────────────────────────────────── */
+/* ─── Upload progress (during pick → upload) ──────────────────────── */
 
 .progressTrack {
-  height: 6px;
+  height: 4px;
   background: var(--m2-cal-2);
-  border-radius: 3px;
+  border-radius: 2px;
   overflow: hidden;
+  margin-top: 6px;
 }
 
 .progressFill {
@@ -230,14 +215,9 @@
   color: var(--m2-mute);
   line-height: 1.55;
   padding: 10px 12px;
-  background: var(--m2-cal);
+  background: rgba(232, 98, 61, 0.05);
   border-radius: 10px;
   border-left: 3px solid var(--m2-tezontle);
-}
-
-.passwordHelp em {
-  font-style: italic;
-  color: var(--m2-ink);
 }
 
 .passwordHelp strong {

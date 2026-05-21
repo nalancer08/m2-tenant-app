@@ -90,9 +90,8 @@ export function Step8Documents({ state, dispatch }: StepProps) {
       <div className={styles.section}>
         <span className={styles.sectionLabel}>Comprobantes de ingreso</span>
         <p className={styles.sectionIntro}>
-          Tres meses recientes. PDF o foto. Si el archivo tiene contraseña, márcalo
-          y captúrala — la guardamos cifrada con AES-256 para que la investigación
-          pueda abrirlo.
+          Tres meses recientes. PDF o foto. Cada archivo se sube en cuanto lo
+          eliges — puedes reemplazarlo cuando quieras tocando la X.
         </p>
         {Array.from({ length: PAYSLIP_SLOTS }).map((_, i) => (
           <FileSlot

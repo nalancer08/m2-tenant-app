@@ -1,0 +1,340 @@
+/* MyInformationPage — read-only del wizard con tabs arriba */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px 18px 32px;
+}
+
+.loading {
+  padding: 40px 24px;
+  color: var(--m2-mute);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ─── Header ──────────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.backBtn {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--m2-line-soft);
+  border-radius: 10px;
+  color: var(--m2-ink);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.backBtn:hover {
+  background: #fff;
+}
+
+.headerMain {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.eyebrow {
+  font-family: var(--m2-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--m2-tezontle);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--m2-serif);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--m2-ink);
+}
+
+/* ─── Status banner ───────────────────────────────────────── */
+
+.statusBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(44, 122, 82, 0.08);
+  border: 1px solid rgba(44, 122, 82, 0.2);
+  border-radius: 12px;
+  color: var(--m2-ink);
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--m2-ok);
+  margin-top: 7px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 4px rgba(44, 122, 82, 0.18);
+  animation: pulseOk 2.2s ease-in-out infinite;
+}
+
+@keyframes pulseOk {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(44, 122, 82, 0.18); }
+  50% { box-shadow: 0 0 0 6px rgba(44, 122, 82, 0.05); }
+}
+
+.statusTitle {
+  display: block;
+  font-weight: 500;
+  font-size: 13.5px;
+  color: var(--m2-ink);
+}
+
+.statusBody {
+  display: block;
+  font-size: 12.5px;
+  color: var(--m2-mute);
+  margin-top: 2px;
+  line-height: 1.5;
+}
+
+/* ─── Tabs ────────────────────────────────────────────────── */
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 -18px;
+  padding: 0 18px 4px;
+  /* mask to fade ends so users see scrollability */
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 18px,
+    #000 calc(100% - 18px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 18px,
+    #000 calc(100% - 18px),
+    transparent 100%
+  );
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border: 1px solid var(--m2-line-soft);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--m2-mute);
+  font-family: var(--m2-sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.tab:hover {
+  background: #fff;
+  color: var(--m2-ink);
+}
+
+.tab_active,
+.tab_active:hover {
+  background: var(--m2-ink);
+  color: #fff;
+  border-color: var(--m2-ink);
+}
+
+/* ─── Body ─────────────────────────────────────────────────── */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cardHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.cardLabel {
+  font-family: var(--m2-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--m2-mute);
+}
+
+.cardCount {
+  font-family: var(--m2-mono);
+  font-size: 12px;
+  color: var(--m2-mute);
+}
+
+/* Key/value grid */
+.kv {
+  display: grid;
+  grid-template-columns: minmax(120px, max-content) 1fr;
+  gap: 8px 16px;
+  margin: 0;
+}
+
+.kv dt {
+  font-size: 12px;
+  color: var(--m2-mute);
+  padding-top: 1px;
+}
+
+.kv dd {
+  font-size: 14px;
+  color: var(--m2-ink);
+  margin: 0;
+  word-break: break-word;
+}
+
+.mono {
+  font-family: var(--m2-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--m2-mute);
+}
+
+/* List rows for refs / roomies / docs */
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.listRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid rgba(10, 31, 63, 0.06);
+}
+
+.listRow:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.listRow:last-child {
+  padding-bottom: 0;
+}
+
+.listMain {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.listTitle {
+  font-size: 14px;
+  color: var(--m2-ink);
+  font-weight: 500;
+}
+
+.listSub {
+  font-size: 12.5px;
+  color: var(--m2-mute);
+}
+
+/* Verified chip */
+.verifiedChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  background: rgba(44, 122, 82, 0.1);
+  color: var(--m2-ok);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* Flags row in identity card */
+.flagsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(10, 31, 63, 0.06);
+}
+
+.flag {
+  padding: 4px 11px;
+  background: rgba(10, 31, 63, 0.05);
+  color: var(--m2-ink);
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.flag_warn {
+  background: rgba(232, 98, 61, 0.1);
+  color: var(--m2-tezontle);
+}
+
+/* Buró panel inside Empleo */
+.buroPanel {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: rgba(10, 31, 63, 0.03);
+  border: 1px solid var(--m2-line-soft);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.buroPanel_given {
+  background: rgba(44, 122, 82, 0.06);
+  border-color: rgba(44, 122, 82, 0.25);
+}
+
+.buroPanelLabel {
+  font-family: var(--m2-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--m2-mute);
+}
+
+.buroPanelBody {
+  font-size: 13.5px;
+  color: var(--m2-ink);
+}

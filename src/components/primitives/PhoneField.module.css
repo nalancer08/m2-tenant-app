@@ -1,0 +1,116 @@
+/* PhoneField — skin Cobalto sobre react-international-phone */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  font-family: var(--m2-sans);
+}
+
+.label {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--m2-mute);
+}
+
+/* react-international-phone outputs a flex container with the country
+   selector button + the input. We re-skin both to match Field. */
+.input {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  border: 1px solid var(--m2-line-soft);
+  border-radius: 12px;
+  background: var(--m2-paper);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:focus-within {
+  border-color: var(--m2-pino);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(30, 58, 107, 0.12);
+}
+
+/* Country selector button (the flag). The library applies its own
+   classes too, so we use :global() to override what we need. */
+.country {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px 0 12px;
+  border: none;
+  background: transparent;
+  border-right: 1px solid var(--m2-line-soft);
+  cursor: pointer;
+  color: var(--m2-ink);
+  height: auto;
+  min-width: 60px;
+}
+
+.country:hover {
+  background: rgba(10, 31, 63, 0.03);
+}
+
+.nativeInput {
+  flex: 1;
+  border: none !important;
+  background: transparent !important;
+  padding: 13px 14px !important;
+  color: var(--m2-ink) !important;
+  font-family: var(--m2-sans) !important;
+  font-size: 15px !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  height: auto !important;
+}
+
+.nativeInput::placeholder {
+  color: var(--m2-mute);
+}
+
+/* The library renders the dropdown as a positioned <ul>. We override
+   colors + radius to match Cobalto. */
+.dropdown {
+  border: 1px solid var(--m2-line-soft) !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+  box-shadow: 0 8px 24px rgba(10, 31, 63, 0.12) !important;
+  color: var(--m2-ink) !important;
+  font-family: var(--m2-sans) !important;
+  max-height: 280px !important;
+}
+
+.dropdown :global(.react-international-phone-country-selector-dropdown__list-item) {
+  font-family: var(--m2-sans) !important;
+  color: var(--m2-ink) !important;
+  padding: 8px 12px !important;
+}
+
+.dropdown :global(.react-international-phone-country-selector-dropdown__list-item:hover) {
+  background: rgba(30, 58, 107, 0.06) !important;
+}
+
+.dropdown :global(.react-international-phone-country-selector-dropdown__list-item--selected) {
+  background: rgba(232, 98, 61, 0.08) !important;
+  color: var(--m2-tezontle) !important;
+}
+
+.dropdown :global(.react-international-phone-country-selector-dropdown__list-item-dial-code) {
+  color: var(--m2-mute) !important;
+  font-family: var(--m2-mono) !important;
+  font-size: 12px !important;
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--m2-mute-2);
+}
+
+.error {
+  font-size: 12px;
+  color: var(--m2-err);
+}

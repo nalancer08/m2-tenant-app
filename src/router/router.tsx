@@ -4,6 +4,7 @@ import { SignupPage } from '../pages/auth/SignupPage';
 import { WelcomePage } from '../pages/welcome/WelcomePage';
 import { LinkLandingPage } from '../pages/flow/LinkLandingPage';
 import { PaymentResultPage } from '../pages/flow/PaymentResultPage';
+import { MyInformationPage } from '../pages/my-info/MyInformationPage';
 import { WizardShell } from '../pages/wizard/WizardShell';
 import { TenantShell } from '../components/layout/TenantShell';
 import { RequireTenantAuth } from '../auth/RequireTenantAuth';
@@ -37,7 +38,14 @@ export const router = createBrowserRouter([
       { path: 'pago/cancelado', element: <PaymentResultPage mode="cancelled" /> },
       {
         element: <TenantShell />,
-        children: [{ index: true, element: <WelcomePage /> }],
+        children: [
+          { index: true, element: <WelcomePage /> },
+          // Vista read-only del perfil completo (post-wizard). Vive en
+          // su propia ruta para que el inquilino la pueda compartir /
+          // bookmarkear, y para que el wizard editable no sea el único
+          // sitio donde el inquilino ve su info.
+          { path: 'mi-informacion', element: <MyInformationPage /> },
+        ],
       },
     ],
   },

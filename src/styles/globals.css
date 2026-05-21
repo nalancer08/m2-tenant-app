@@ -10,7 +10,25 @@ body,
 
 html,
 body {
-  background: var(--m2-cal);
+  /* Fondo crema cálido + halo tezontle muy diluido arriba y halo sky
+     diluido abajo. Mantiene la sensación Cobalto pero deja respirar la
+     pantalla en vez de sentirse plano y apagado. El halo se queda fijo
+     en la pantalla (background-attachment: fixed) para que al hacer
+     scroll no "se acabe" el color. */
+  background-color: var(--m2-paper);
+  background-image:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(232, 98, 61, 0.10) 0%,
+      rgba(232, 98, 61, 0) 55%
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      rgba(110, 156, 210, 0.08) 0%,
+      rgba(110, 156, 210, 0) 50%
+    );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--m2-ink);
   font-family: var(--m2-sans);
   font-size: 14px;

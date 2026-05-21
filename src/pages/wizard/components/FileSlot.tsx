@@ -1,6 +1,5 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IconCheck, IconLock, IconX } from '../../../components/icons';
-import { Button } from '../../../components/primitives/Button';
 import type { TenantDocumentRow, DocumentType } from '../../../api/tenant-me';
 import { tenantMeApi } from '../../../api/tenant-me';
 import styles from './FileSlot.module.css';
@@ -18,16 +17,22 @@ interface FileSlotProps {
   required?: boolean;
   /** Accept attribute hint for the file picker. */
   accept?: string;
-  /** Called after a successful upload or delete with the latest doc (or null). */
+  /** Called after a successful upload, password-flag change, or delete. */
   onChange: (doc: TenantDocumentRow | null) => void;
 }
 
 /**
- * One upload slot. Three phases of UI:
- *   1. Empty: a tappable card that opens the file picker.
- *   2. File picked, not yet uploaded: filename preview + password toggle +
- *      (when has_password=true) password input + "Subir" button.
- *   3. Uploaded: filename + size + check icon + remove button.
+ * One upload slot. Two phases of UI:
+ *   1. Empty: a tappable card that opens the file picker. Picking the
+ *      file immediately triggers the upload — no "Subir archivo"
+ *      confirmation step. Cancelling the picker leaves the slot empty.
+ *   2. Uploaded: filename + size + check + small ícono X to remove.
+ *      The "el archivo tiene contraseña" toggle lives here too (flag-only,
+ *      we never store the password itself).
+ *
+ * Why upload-on-pick: the previous flow had a 2-step picker → preview →
+ * "Subir archivo" button which confused users (Erick: "esta padre tener
+ * que confirmar la subida, pero no se entiende"). One tap, one upload.
  */
 export function FileSlot({
   label,
@@ -39,171 +44,168 @@ export function FileSlot({
   onChange,
 }: FileSlotProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [picked, setPicked] = useState<File | null>(null);
-  const [hasPassword, setHasPassword] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [removing, setRemoving] = useState(false);
 
+  // Local mirror of has_password so the toggle reacts instantly while
+  // the PATCH is in flight. Reset whenever the existing doc changes.
+  const [pwLocal, setPwLocal] = useState(existing?.has_password ?? false);
+  useEffect(() => {
+    setPwLocal(existing?.has_password ?? false);
+  }, [existing?.id, existing?.has_password]);
+
+  const handlePicked = async (file: File) => {
+    setError(null);
+    setUploading(true);
+    setProgress(0);
+    try {
+      const doc = await tenantMeApi.uploadDocument({
+        file,
+        type,
+        has_password: false,
+        onProgress: setProgress,
+      });
+      onChange(doc);
+    } catch (err) {
+      const e = err as { response?: { data?: { message?: string } } };
+      setError(e.response?.data?.message ?? 'No pudimos subir el archivo.');
+    } finally {
+      setUploading(false);
+      // Allow re-picking the same file (otherwise the input considers it unchanged)
+      if (inputRef.current) inputRef.current.value = '';
+    }
+  };
+
+  const handleRemove = async () => {
+    if (!existing) return;
+    setError(null);
+    setRemoving(true);
+    try {
+      await tenantMeApi.deleteDocument(existing.id);
+      onChange(null);
+    } catch (err) {
+      setError('No pudimos eliminar el archivo.');
+      void err;
+    } finally {
+      setRemoving(false);
+    }
+  };
+
+  const handlePasswordToggle = async (next: boolean) => {
+    if (!existing) return;
+    setPwLocal(next);
+    try {
+      const updated = await tenantMeApi.patchDocument(existing.id, {
+        has_password: next,
+      });
+      onChange(updated);
+    } catch (err) {
+      // Revert on error
+      setPwLocal(existing.has_password);
+      setError('No pudimos actualizar el archivo.');
+      void err;
+    }
+  };
+
+  // Uploaded state ────────────────────────────────────────────────
   if (existing) {
     return (
       <div className={`${styles.slot} ${styles.slot_uploaded}`}>
-        <div className={styles.slotHead}>
-          <span className={styles.label}>
-            {label}
-            {required ? <span className={styles.required}> · obligatorio</span> : null}
-          </span>
+        <div className={styles.uploadedRow}>
           <span className={styles.checkIcon} aria-hidden>
             <IconCheck width={14} height={14} />
           </span>
+          <div className={styles.uploadedText}>
+            <span className={styles.uploadedLabel}>
+              {label}
+              {required ? <span className={styles.required}> · obligatorio</span> : null}
+            </span>
+            <span className={styles.fileName} title={existing.file_name}>
+              {existing.file_name}{' '}
+              <span className={styles.fileSize}>{formatSize(existing.file_size)}</span>
+            </span>
+          </div>
+          <button
+            type="button"
+            className={styles.removeIconBtn}
+            onClick={handleRemove}
+            disabled={removing}
+            aria-label="Eliminar archivo"
+            title="Eliminar"
+          >
+            <IconX width={14} height={14} />
+          </button>
         </div>
-        <div className={styles.uploadedRow}>
-          <span className={styles.fileName} title={existing.file_name}>
-            {existing.file_name}
-          </span>
-          <span className={styles.fileSize}>{formatSize(existing.file_size)}</span>
-        </div>
-        {existing.has_password ? (
-          <p className={styles.passwordTag}>
-            <IconLock width={12} height={12} /> Archivo con contraseña guardada
+
+        {allowPassword ? (
+          <label className={styles.pwInlineToggle}>
+            <input
+              type="checkbox"
+              checked={pwLocal}
+              onChange={(e) => handlePasswordToggle(e.currentTarget.checked)}
+            />
+            <span className={styles.pwInlineBox} aria-hidden>
+              {pwLocal ? <IconCheck width={11} height={11} /> : null}
+            </span>
+            <span className={styles.pwInlineText}>
+              <IconLock width={11} height={11} /> El archivo tiene contraseña
+            </span>
+          </label>
+        ) : null}
+
+        {pwLocal ? (
+          <p className={styles.passwordHelp}>
+            Por seguridad <strong>no guardamos contraseñas de archivos</strong>.
+            Te recomendamos quitarle la contraseña al PDF antes de subirlo. Si
+            no puedes, el equipo te contactará por WhatsApp para abrirlo juntos.
           </p>
         ) : null}
-        <button
-          type="button"
-          className={styles.removeBtn}
-          onClick={async () => {
-            try {
-              await tenantMeApi.deleteDocument(existing.id);
-              onChange(null);
-            } catch (err) {
-              setError('No pudimos eliminar el archivo.');
-              void err;
-            }
-          }}
-        >
-          <IconX width={14} height={14} /> Eliminar
-        </button>
+
         {error ? <p className={styles.error}>{error}</p> : null}
       </div>
     );
   }
 
-  if (picked) {
-    return (
-      <div className={styles.slot}>
-        <div className={styles.slotHead}>
+  // Empty state (or mid-upload) ──────────────────────────────────
+  return (
+    <>
+      <button
+        type="button"
+        className={styles.pickerBtn}
+        onClick={() => inputRef.current?.click()}
+        disabled={uploading}
+      >
+        <div className={styles.pickerHead}>
           <span className={styles.label}>
             {label}
             {required ? <span className={styles.required}> · obligatorio</span> : null}
           </span>
         </div>
-        <div className={styles.previewRow}>
-          <span className={styles.fileName} title={picked.name}>
-            {picked.name}
-          </span>
-          <button
-            type="button"
-            className={styles.linkBtn}
-            onClick={() => {
-              setPicked(null);
-              setError(null);
-            }}
-          >
-            Cambiar
-          </button>
-        </div>
-
-        {allowPassword ? (
-          <div className={styles.passwordSection}>
-            <label className={styles.passwordToggle}>
-              <input
-                type="checkbox"
-                checked={hasPassword}
-                onChange={(e) => setHasPassword(e.currentTarget.checked)}
-              />
-              <span className={styles.passwordToggleBox} aria-hidden>
-                {hasPassword ? <IconCheck width={12} height={12} /> : null}
-              </span>
-              <span className={styles.passwordToggleText}>
-                El archivo tiene contraseña
-              </span>
-            </label>
-            {hasPassword ? (
-              <p className={styles.passwordHelp}>
-                Por seguridad <strong>no guardamos contraseñas de archivos</strong>.
-                Te recomendamos quitarle la contraseña al PDF antes de subirlo
-                (en Adobe Reader: <em>Archivo → Propiedades → Seguridad</em>). Si
-                no puedes, súbelo igual: el equipo te contactará por WhatsApp para
-                abrirlo juntos.
-              </p>
-            ) : null}
-          </div>
-        ) : null}
-
+        <span className={styles.pickerHint}>
+          {uploading
+            ? 'Subiendo…'
+            : 'Tocar para elegir archivo (PDF, JPG, PNG · máx 15 MB)'}
+        </span>
         {uploading ? (
           <div className={styles.progressTrack} aria-label="Subiendo">
             <div className={styles.progressFill} style={{ width: `${progress * 100}%` }} />
           </div>
         ) : null}
-
-        {error ? <p className={styles.error}>{error}</p> : null}
-
-        <Button
-          fullWidth
-          loading={uploading}
-          disabled={uploading}
-          onClick={async () => {
-            setError(null);
-            setUploading(true);
-            setProgress(0);
-            try {
-              const doc = await tenantMeApi.uploadDocument({
-                file: picked,
-                type,
-                has_password: hasPassword,
-                onProgress: setProgress,
-              });
-              setPicked(null);
-              setHasPassword(false);
-              onChange(doc);
-            } catch (err) {
-              const e = err as { response?: { data?: { message?: string } } };
-              setError(e.response?.data?.message ?? 'No pudimos subir el archivo.');
-            } finally {
-              setUploading(false);
-            }
+        <input
+          ref={inputRef}
+          type="file"
+          accept={accept ?? 'application/pdf,image/jpeg,image/png,image/webp,image/heic'}
+          style={{ display: 'none' }}
+          onChange={(e) => {
+            const f = e.currentTarget.files?.[0];
+            if (f) void handlePicked(f);
           }}
-        >
-          Subir archivo
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <button
-      type="button"
-      className={styles.pickerBtn}
-      onClick={() => inputRef.current?.click()}
-    >
-      <div className={styles.pickerHead}>
-        <span className={styles.label}>
-          {label}
-          {required ? <span className={styles.required}> · obligatorio</span> : null}
-        </span>
-      </div>
-      <span className={styles.pickerHint}>Tocar para elegir archivo (PDF, JPG, PNG · máx 15 MB)</span>
-      <input
-        ref={inputRef}
-        type="file"
-        accept={accept ?? 'application/pdf,image/jpeg,image/png,image/webp,image/heic'}
-        style={{ display: 'none' }}
-        onChange={(e) => {
-          const f = e.currentTarget.files?.[0];
-          if (f) setPicked(f);
-        }}
-      />
-    </button>
+        />
+      </button>
+      {error ? <p className={styles.error}>{error}</p> : null}
+    </>
   );
 }
 

@@ -1,4 +1,5 @@
 import { Field } from '../../../components/primitives/Field';
+import { PhoneField } from '../../../components/primitives/PhoneField';
 import { Button } from '../../../components/primitives/Button';
 import { IconPlus, IconX } from '../../../components/icons';
 import type { Action, ReferenceInput, WizardState } from '../state';
@@ -93,12 +94,10 @@ export function Step4References({ state, dispatch }: StepProps) {
               value={r.full_name}
               onChange={(e) => update(i, { full_name: e.currentTarget.value })}
             />
-            <Field
-              label="Teléfono (con lada)"
-              placeholder="+52 55 1234 5678"
-              inputMode="tel"
+            <PhoneField
+              label="Teléfono"
               value={r.phone}
-              onChange={(e) => update(i, { phone: e.currentTarget.value })}
+              onChange={(phone) => update(i, { phone })}
             />
             <Field
               label="Relación (opcional)"

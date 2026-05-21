@@ -4,7 +4,8 @@
   min-height: 100vh;
   max-width: 480px;
   margin: 0 auto;
-  background: var(--m2-cal);
+  /* Transparente para dejar pasar el halo del body. */
+  background: transparent;
 }
 
 .header {
@@ -12,7 +13,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 18px 20px 14px;
-  background: var(--m2-cal);
+  /* Glass sutil — mismo patrón que WizardShell para coherencia. */
+  background: rgba(250, 248, 244, 0.85);
+  backdrop-filter: saturate(140%) blur(8px);
+  -webkit-backdrop-filter: saturate(140%) blur(8px);
   border-bottom: 1px solid var(--m2-line-soft);
   position: sticky;
   top: 0;

@@ -91,6 +91,13 @@
   cursor: not-allowed;
 }
 
+.selectHint {
+  font-size: 12px;
+  color: var(--m2-mute-2);
+  line-height: 1.45;
+  margin-top: 2px;
+}
+
 /* ─── Dynamic item list (used in roomies + references) ──────────── */
 
 .itemList {
