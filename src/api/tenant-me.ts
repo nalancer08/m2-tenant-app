@@ -122,11 +122,22 @@ export interface TenantRoommateRow {
   invited: boolean;
 }
 
+export interface DealBrokerView {
+  id: string;
+  first_name: string;
+  last_name: string;
+  region?: string | null;
+  email?: string | null;
+  phone?: string | null;
+}
+
 export interface DealRowForTenant {
   id: string;
   folio: string;
   status: string;
   link_token: string;
+  rent_amount_cents?: string | number | null;
+  currency?: string | null;
   property: {
     id: string;
     street: string;
@@ -138,6 +149,7 @@ export interface DealRowForTenant {
     state: string;
     postal_code: string;
   } | null;
+  broker: DealBrokerView | null;
 }
 
 export type DocumentType =

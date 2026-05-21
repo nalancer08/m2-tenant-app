@@ -47,6 +47,152 @@
   color: var(--m2-ink);
 }
 
+/* ─── Investigation context card (propiedad + asesor) ────── */
+
+.context {
+  background: #fff;
+  border: 1px solid var(--m2-line-soft);
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 1px 2px rgba(10, 31, 63, 0.03);
+}
+
+.contextHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(10, 31, 63, 0.06);
+}
+
+.contextEyebrow {
+  font-family: var(--m2-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--m2-tezontle);
+}
+
+.contextFolio {
+  font-family: var(--m2-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--m2-mute);
+  text-transform: uppercase;
+}
+
+.contextGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+/* En tablet+ pasamos a dos columnas (Propiedad | Asesor) */
+@media (min-width: 600px) {
+  .contextGrid {
+    grid-template-columns: 1fr 1px 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  .contextDivider {
+    align-self: stretch;
+    background: rgba(10, 31, 63, 0.06);
+  }
+}
+
+.contextDivider {
+  display: none;
+}
+
+.contextBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.contextLabel {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--m2-mute);
+  font-family: var(--m2-mono);
+  margin-bottom: 4px;
+}
+
+.contextValue {
+  font-size: 14.5px;
+  color: var(--m2-ink);
+  font-weight: 500;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.contextValueMuted {
+  font-size: 13.5px;
+  color: var(--m2-mute);
+}
+
+.contextSub {
+  font-size: 12.5px;
+  color: var(--m2-mute);
+  line-height: 1.45;
+}
+
+/* Asesor row: avatar + nombre + contactos */
+.brokerRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.brokerAvatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--m2-pino) 0%, var(--m2-tezontle) 140%);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--m2-serif);
+  font-size: 18px;
+  font-weight: 400;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.brokerText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.brokerLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.brokerLink {
+  font-size: 12.5px;
+  color: var(--m2-pino);
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.brokerLink:hover {
+  color: var(--m2-pino-600);
+  text-decoration: underline;
+}
+
 /* ─── Status banner ───────────────────────────────────────── */
 
 .statusBanner {

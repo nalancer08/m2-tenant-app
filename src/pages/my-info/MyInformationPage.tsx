@@ -5,6 +5,7 @@ import { Button } from '../../components/primitives/Button';
 import { IconCheck } from '../../components/icons';
 import { tenantMeApi } from '../../api/tenant-me';
 import type {
+  DealRowForTenant,
   FullTenantResponse,
   TenantAddressRow,
   TenantDocumentRow,
@@ -180,6 +181,11 @@ export function MyInformationPage() {
           <h1 className={styles.title}>Tu perfil</h1>
         </div>
       </header>
+
+      {/* Context card: para qué propiedad y con qué asesor está
+          enviando esta información. Es lo primero que ve al entrar
+          para situarse — la data luego entra por los tabs. */}
+      {activeDeal ? <InvestigationContext deal={activeDeal} /> : null}
 
       {completed ? (
         <div className={styles.statusBanner}>
@@ -535,6 +541,97 @@ function PagoTab({
         </Button>
       )}
     </Card>
+  );
+}
+
+/* ─── Investigation context card (propiedad + asesor) ────────── */
+
+function InvestigationContext({ deal }: { deal: DealRowForTenant }) {
+  const property = deal.property;
+  const broker = deal.broker;
+  const brokerName = broker
+    ? `${broker.first_name} ${broker.last_name}`.trim()
+    : null;
+  const brokerInitial = brokerName ? brokerName[0].toUpperCase() : 'A';
+
+  // Property address: street + numero on one line, neighborhood +
+  // city below. Keeps the card compact.
+  const propertyLine1 = property
+    ? `${property.street}${property.exterior_number ? ` ${property.exterior_number}` : ''}${
+        property.interior_number ? ` Int. ${property.interior_number}` : ''
+      }`
+    : null;
+  const propertyLine2 = property
+    ? [property.neighborhood, property.municipality || property.city]
+        .filter(Boolean)
+        .join(', ')
+    : null;
+
+  return (
+    <div className={styles.context}>
+      <div className={styles.contextHeader}>
+        <span className={styles.contextEyebrow}>Tu investigación</span>
+        <span className={styles.contextFolio}>{deal.folio}</span>
+      </div>
+
+      <div className={styles.contextGrid}>
+        <div className={styles.contextBlock}>
+          <span className={styles.contextLabel}>Propiedad</span>
+          {property ? (
+            <>
+              <span className={styles.contextValue}>{propertyLine1}</span>
+              {propertyLine2 ? (
+                <span className={styles.contextSub}>{propertyLine2}</span>
+              ) : null}
+              <span className={styles.contextSub}>
+                {property.city}, {property.state} · CP {property.postal_code}
+              </span>
+            </>
+          ) : (
+            <span className={styles.contextValueMuted}>Propiedad eliminada</span>
+          )}
+        </div>
+
+        <div className={styles.contextDivider} aria-hidden />
+
+        <div className={styles.contextBlock}>
+          <span className={styles.contextLabel}>Tu asesor</span>
+          {broker ? (
+            <div className={styles.brokerRow}>
+              <span className={styles.brokerAvatar} aria-hidden>
+                {brokerInitial}
+              </span>
+              <div className={styles.brokerText}>
+                <span className={styles.contextValue}>{brokerName}</span>
+                {broker.region ? (
+                  <span className={styles.contextSub}>{broker.region}</span>
+                ) : null}
+                <div className={styles.brokerLinks}>
+                  {broker.email ? (
+                    <a
+                      href={`mailto:${broker.email}`}
+                      className={styles.brokerLink}
+                    >
+                      {broker.email}
+                    </a>
+                  ) : null}
+                  {broker.phone ? (
+                    <a
+                      href={`tel:${broker.phone}`}
+                      className={styles.brokerLink}
+                    >
+                      {broker.phone}
+                    </a>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <span className={styles.contextValueMuted}>Sin asesor asignado</span>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
