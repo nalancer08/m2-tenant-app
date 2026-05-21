@@ -98,8 +98,11 @@ export function WizardShell() {
     return (
       <div className={styles.root}>
         <header className={styles.header}>
-          <Logo size={24} />
-          <span className={styles.headerBrand}>Metro Cuadrado</span>
+          <div className={styles.headerInner}>
+            <span />
+            <span />
+            <Logo size={22} />
+          </div>
         </header>
         <div className={styles.loading}>Cargando tu información…</div>
       </div>
@@ -110,8 +113,11 @@ export function WizardShell() {
     return (
       <div className={styles.root}>
         <header className={styles.header}>
-          <Logo size={24} />
-          <span className={styles.headerBrand}>Metro Cuadrado</span>
+          <div className={styles.headerInner}>
+            <span />
+            <span />
+            <Logo size={22} />
+          </div>
         </header>
         <div className={styles.loading}>
           No pudimos cargar tu información.
@@ -136,22 +142,24 @@ export function WizardShell() {
   return (
     <div className={styles.root}>
       <header className={styles.header}>
-        <button type="button" className={styles.backIconBtn} onClick={onBack} aria-label="Atrás">
-          <IconArrowLeft width={18} height={18} />
-        </button>
-        <div className={styles.headerCenter}>
-          <span className={styles.progressLabel}>
-            Paso {state.step} de {TOTAL_STEPS}
-          </span>
-          <div className={styles.progressTrack}>
-            <div
-              className={styles.progressFill}
-              style={{ width: `${(state.step / TOTAL_STEPS) * 100}%` }}
-            />
+        <div className={styles.headerInner}>
+          <button type="button" className={styles.backIconBtn} onClick={onBack} aria-label="Atrás">
+            <IconArrowLeft width={18} height={18} />
+          </button>
+          <div className={styles.headerCenter}>
+            <span className={styles.progressLabel}>
+              Paso {state.step} de {TOTAL_STEPS}
+            </span>
+            <div className={styles.progressTrack}>
+              <div
+                className={styles.progressFill}
+                style={{ width: `${(state.step / TOTAL_STEPS) * 100}%` }}
+              />
+            </div>
           </div>
-        </div>
-        <div className={styles.headerBrand}>
-          <Logo size={22} />
+          <div className={styles.headerBrand}>
+            <Logo size={22} />
+          </div>
         </div>
       </header>
 

@@ -1,29 +1,34 @@
+/* Wizard shell — header full-bleed, main centrado a 480px. */
+
 .root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  max-width: 480px;
-  margin: 0 auto;
-  /* Transparente para dejar pasar el halo del body — antes era cal
-     opaco y "tapaba" el ambiente cremoso. */
   background: transparent;
 }
 
+/* ─── Header (full-bleed) ──────────────────────────────────────── */
+
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(250, 248, 244, 0.78);
+  backdrop-filter: saturate(150%) blur(12px);
+  -webkit-backdrop-filter: saturate(150%) blur(12px);
+  border-bottom: 1px solid rgba(10, 31, 63, 0.06);
+}
+
+/* Inner: misma columna que el main para alinear el back button con
+   el contenido y el logo con la columna derecha. */
+.headerInner {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 12px 20px;
   display: grid;
   grid-template-columns: 36px 1fr 36px;
   align-items: center;
   gap: 14px;
-  padding: 16px 18px 12px;
-  /* Glassmorphism muy sutil: deja ver el halo del body pero mantiene
-     el header legible al hacer scroll. */
-  background: rgba(250, 248, 244, 0.85);
-  backdrop-filter: saturate(140%) blur(8px);
-  -webkit-backdrop-filter: saturate(140%) blur(8px);
-  border-bottom: 1px solid var(--m2-line-soft);
-  position: sticky;
-  top: 0;
-  z-index: 10;
 }
 
 .backIconBtn {
@@ -32,15 +37,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: 1px solid var(--m2-line-soft);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(10, 31, 63, 0.08);
   border-radius: 10px;
   color: var(--m2-ink);
   cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
 }
 
 .backIconBtn:hover {
-  background: rgba(10, 31, 63, 0.04);
+  background: #fff;
+  border-color: rgba(10, 31, 63, 0.16);
 }
 
 .headerCenter {
@@ -64,7 +71,7 @@
 .progressTrack {
   width: 100%;
   height: 4px;
-  background: var(--m2-cal-2);
+  background: rgba(10, 31, 63, 0.08);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -83,8 +90,13 @@
   color: var(--m2-ink);
 }
 
+/* ─── Main (centered) ───────────────────────────────────────────── */
+
 .main {
   flex: 1;
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
   padding: 20px 20px 28px;
   display: flex;
   flex-direction: column;

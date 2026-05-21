@@ -1,35 +1,186 @@
+/* TenantShell — header full-bleed, main centrado a 480px. */
+
 .root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  max-width: 480px;
-  margin: 0 auto;
-  /* Transparente para dejar pasar el halo del body. */
   background: transparent;
 }
 
+/* Full-bleed: sin max-width, sticky en la parte de arriba. */
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 20px 14px;
-  /* Glass sutil — mismo patrón que WizardShell para coherencia. */
-  background: rgba(250, 248, 244, 0.85);
-  backdrop-filter: saturate(140%) blur(8px);
-  -webkit-backdrop-filter: saturate(140%) blur(8px);
-  border-bottom: 1px solid var(--m2-line-soft);
   position: sticky;
   top: 0;
   z-index: 10;
+  background: rgba(250, 248, 244, 0.78);
+  backdrop-filter: saturate(150%) blur(12px);
+  -webkit-backdrop-filter: saturate(150%) blur(12px);
+  border-bottom: 1px solid rgba(10, 31, 63, 0.06);
 }
 
-.headerLabel {
-  font-size: 11.5px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--m2-mute);
+/* Inner: misma columna que el main, alinea logo con contenido. */
+.headerInner {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
+
+/* ─── Account button (pill con avatar) ──────────────────────────── */
+
+.accountWrap {
+  position: relative;
+}
+
+.accountBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 4px 4px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(10, 31, 63, 0.08);
+  border-radius: 999px;
+  color: var(--m2-ink);
+  font-family: var(--m2-sans);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.accountBtn:hover {
+  background: #fff;
+  border-color: rgba(10, 31, 63, 0.16);
+  box-shadow: 0 1px 4px rgba(10, 31, 63, 0.06);
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--m2-pino) 0%, var(--m2-tezontle) 140%);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--m2-serif);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.accountText {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+  color: var(--m2-ink);
+}
+
+.caret {
+  display: inline-flex;
+  color: var(--m2-mute);
+  margin-left: 2px;
+  flex-shrink: 0;
+}
+
+/* Hide email text on very narrow screens — keep just the avatar */
+@media (max-width: 360px) {
+  .accountText {
+    display: none;
+  }
+  .accountBtn {
+    padding: 4px;
+  }
+}
+
+/* ─── Dropdown menu ─────────────────────────────────────────────── */
+
+.menuBackdrop {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  border: none;
+  cursor: default;
+  z-index: 19;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 20;
+  min-width: 220px;
+  background: #fff;
+  border: 1px solid rgba(10, 31, 63, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 20px 40px rgba(10, 31, 63, 0.14);
+  padding: 6px;
+  animation: menuFadeIn 0.12s ease;
+}
+
+@keyframes menuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menuEmail {
+  padding: 8px 12px 10px;
+  font-size: 11.5px;
+  color: var(--m2-mute);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-bottom: 1px solid var(--m2-line-soft);
+  margin-bottom: 6px;
+}
+
+.menuEmail strong {
+  color: var(--m2-ink);
+  font-weight: 500;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.menuItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 9px 12px;
+  border-radius: 9px;
+  color: var(--m2-ink);
+  font-family: var(--m2-sans);
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.menuItem:hover {
+  background: rgba(30, 58, 107, 0.06);
+}
+
+.menuItem_danger {
+  color: var(--m2-err);
+}
+
+.menuItem_danger:hover {
+  background: rgba(178, 52, 46, 0.08);
+}
+
+/* ─── Wizard progress (step indicator in header) ───────────────── */
 
 .progress {
   display: flex;
@@ -62,8 +213,13 @@
   transition: width 0.3s ease;
 }
 
+/* ─── Main column (centered, max-width 480px) ──────────────────── */
+
 .main {
   flex: 1;
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
   padding: 22px 20px 32px;
   display: flex;
   flex-direction: column;
