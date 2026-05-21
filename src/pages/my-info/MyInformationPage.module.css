@@ -121,6 +121,8 @@
   color: var(--m2-mute);
   font-family: var(--m2-mono);
   margin-bottom: 4px;
+  /* En una sola línea siempre — "TU ASESOR" no debe partirse */
+  white-space: nowrap;
 }
 
 .contextValue {
