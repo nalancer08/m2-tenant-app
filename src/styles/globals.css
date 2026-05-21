@@ -64,3 +64,21 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+/* Responsive max-width del portal. El wizard sigue mobile-first
+   (lineal, una columna), pero deja respirar en pantallas grandes. La
+   vista 'mi-información' tiene su propio max --m2-shell-max-wide
+   porque sus tabs + cards aprovechan mucho mejor el ancho extra. */
+@media (min-width: 768px) {
+  :root {
+    --m2-shell-max: 600px;
+    --m2-shell-max-wide: 760px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --m2-shell-max: 680px;
+    --m2-shell-max-wide: 960px;
+  }
+}

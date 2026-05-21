@@ -56,6 +56,16 @@ export function WizardShell() {
     }
   }, [fullQ.data]);
 
+  // Si el inquilino ya completó (pagó), el wizard queda congelado: la
+  // investigación arrancó y editar a estas alturas mete inconsistencias.
+  // Redirigimos a la vista read-only. El proceso de "destrabar un paso"
+  // lo dispara el asesor desde admin (futuro).
+  useEffect(() => {
+    if (fullQ.data?.tenant.wizard_completed) {
+      navigate('/mi-informacion', { replace: true });
+    }
+  }, [fullQ.data, navigate]);
+
   const onNext = async () => {
     setError(null);
     setSaving(true);

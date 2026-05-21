@@ -18,9 +18,11 @@
   border-bottom: 1px solid rgba(10, 31, 63, 0.06);
 }
 
-/* Inner: misma columna que el main, alinea logo con contenido. */
+/* Inner: misma columna que el main, alinea logo con contenido.
+   Usa la var wide para que en desktop la barra del header acompañe el
+   ancho extra de mi-información sin verse "cortado". */
 .headerInner {
-  max-width: 480px;
+  max-width: var(--m2-shell-max-wide);
   margin: 0 auto;
   padding: 14px 20px;
   display: flex;
@@ -213,11 +215,11 @@
   transition: width 0.3s ease;
 }
 
-/* ─── Main column (centered, max-width 480px) ──────────────────── */
+/* ─── Main column (centered, responsive max-width) ─────────────── */
 
 .main {
   flex: 1;
-  max-width: 480px;
+  max-width: var(--m2-shell-max-wide);
   width: 100%;
   margin: 0 auto;
   padding: 22px 20px 32px;

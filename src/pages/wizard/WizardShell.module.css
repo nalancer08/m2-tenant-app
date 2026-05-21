@@ -20,9 +20,10 @@
 }
 
 /* Inner: misma columna que el main para alinear el back button con
-   el contenido y el logo con la columna derecha. */
+   el contenido y el logo con la columna derecha. Mobile-first: el
+   wizard NO crece tanto como mi-información (es un flujo lineal). */
 .headerInner {
-  max-width: 480px;
+  max-width: var(--m2-shell-max);
   margin: 0 auto;
   padding: 12px 20px;
   display: grid;
@@ -94,7 +95,7 @@
 
 .main {
   flex: 1;
-  max-width: 480px;
+  max-width: var(--m2-shell-max);
   width: 100%;
   margin: 0 auto;
   padding: 20px 20px 28px;

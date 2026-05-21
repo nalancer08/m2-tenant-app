@@ -27,8 +27,13 @@ export function WelcomePage() {
 
   useEffect(() => {
     if (!fullQ.data) return;
+    // Si aún no termina → entra al wizard.
+    // Si ya terminó → entra a la vista read-only de su perfil. Welcome
+    // funciona solo como gate: no debe quedarse aquí ningún usuario.
     if (!fullQ.data.tenant.wizard_completed) {
       navigate('/wizard', { replace: true });
+    } else {
+      navigate('/mi-informacion', { replace: true });
     }
   }, [fullQ.data, navigate]);
 

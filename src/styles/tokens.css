@@ -45,4 +45,10 @@
   --m2-radius-sm: 10px;
   --m2-radius: 14px;
   --m2-radius-lg: 22px;
+
+  /* Ancho máximo del contenido del portal del inquilino. Se ajusta por
+     breakpoint en globals.css para que mobile sea mobile-first (480px)
+     pero tablet/desktop no desperdicien medio viewport en blanco. */
+  --m2-shell-max: 480px;
+  --m2-shell-max-wide: 480px; /* mi-información en desktop crece más */
 }

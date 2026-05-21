@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '../../components/primitives/Card';
 import { Button } from '../../components/primitives/Button';
-import { IconArrowLeft, IconCheck } from '../../components/icons';
+import { IconCheck } from '../../components/icons';
 import { tenantMeApi } from '../../api/tenant-me';
 import type {
   FullTenantResponse,
@@ -149,7 +148,6 @@ function fmtAddress(a: TenantAddressRow): string {
  * pedirle a su asesor que destrabe la edición (proceso futuro).
  */
 export function MyInformationPage() {
-  const navigate = useNavigate();
   const [tab, setTab] = useState<TabKey>('identidad');
 
   const q = useQuery({
@@ -177,14 +175,6 @@ export function MyInformationPage() {
   return (
     <div className={styles.root}>
       <header className={styles.header}>
-        <button
-          type="button"
-          className={styles.backBtn}
-          onClick={() => navigate('/')}
-          aria-label="Volver"
-        >
-          <IconArrowLeft width={14} height={14} />
-        </button>
         <div className={styles.headerMain}>
           <span className={styles.eyebrow}>Mi información</span>
           <h1 className={styles.title}>Tu perfil</h1>
@@ -204,30 +194,34 @@ export function MyInformationPage() {
         </div>
       ) : null}
 
-      {/* ─── Tabs ─────────────────────────────────────────────── */}
-      <div className={styles.tabs} role="tablist" aria-label="Secciones">
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            role="tab"
-            aria-selected={tab === t.key}
-            className={`${styles.tab} ${tab === t.key ? styles.tab_active : ''}`}
-            onClick={() => setTab(t.key)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      {/* En mobile: tabs arriba (horizontal scroll). En desktop: tabs
+          como sidebar vertical a la izquierda. El layout responde por
+          CSS — el JSX es el mismo. */}
+      <div className={styles.layout}>
+        <div className={styles.tabs} role="tablist" aria-label="Secciones">
+          {TABS.map((t) => (
+            <button
+              key={t.key}
+              role="tab"
+              aria-selected={tab === t.key}
+              className={`${styles.tab} ${tab === t.key ? styles.tab_active : ''}`}
+              onClick={() => setTab(t.key)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
 
-      <div className={styles.body}>
-        {tab === 'identidad' ? <IdentidadTab tenant={data.tenant} /> : null}
-        {tab === 'domicilio' ? <DomicilioTab address={data.current_address} /> : null}
-        {tab === 'empleo' ? <EmpleoTab employment={data.current_employment} /> : null}
-        {tab === 'referencias' ? (
-          <ReferenciasTab references={data.references} roommates={data.roommates} />
-        ) : null}
-        {tab === 'documentos' ? <DocumentosTab documents={data.documents} /> : null}
-        {tab === 'pago' ? <PagoTab deal={activeDeal} data={data} /> : null}
+        <div className={styles.body}>
+          {tab === 'identidad' ? <IdentidadTab tenant={data.tenant} /> : null}
+          {tab === 'domicilio' ? <DomicilioTab address={data.current_address} /> : null}
+          {tab === 'empleo' ? <EmpleoTab employment={data.current_employment} /> : null}
+          {tab === 'referencias' ? (
+            <ReferenciasTab references={data.references} roommates={data.roommates} />
+          ) : null}
+          {tab === 'documentos' ? <DocumentosTab documents={data.documents} /> : null}
+          {tab === 'pago' ? <PagoTab deal={activeDeal} data={data} /> : null}
+        </div>
       </div>
     </div>
   );
