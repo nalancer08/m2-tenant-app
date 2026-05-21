@@ -46,6 +46,43 @@
   vertical-align: middle;
 }
 
+/* Hero compacto para los estados "ya enviaste" / "continúa" / "cuenta
+   equivocada". El ícono va arriba como medalla, después el eyebrow,
+   título y cuerpo. */
+.statusHero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px 0 12px;
+}
+
+.statusHeroIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.statusHeroIcon_ok {
+  background: rgba(44, 122, 82, 0.12);
+  color: var(--m2-ok);
+}
+
+.statusHeroIcon_progress {
+  background: rgba(232, 98, 61, 0.12);
+  color: var(--m2-tezontle);
+}
+
+.statusHeroIcon_warn {
+  background: rgba(232, 177, 58, 0.16);
+  color: #8A5A1B;
+}
+
 .body {
   padding: 8px 20px 28px;
   display: flex;

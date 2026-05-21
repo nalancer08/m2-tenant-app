@@ -4,7 +4,10 @@ import { Card } from '../../components/primitives/Card';
 import { Button } from '../../components/primitives/Button';
 import { Logo } from '../../components/primitives/Logo';
 import { IconCheck, IconClock, IconShield } from '../../components/icons';
-import { publicDealApi } from '../../api/public-deal';
+import { publicDealApi, type PublicDealResponse } from '../../api/public-deal';
+import { tenantMeApi } from '../../api/tenant-me';
+import { useAuth } from '../../auth/AuthProvider';
+import { readToken } from '../../api/client';
 import { formatCents, formatPropertyAddress } from '../../lib/format';
 import styles from './LinkLandingPage.module.css';
 
@@ -13,9 +16,28 @@ import styles from './LinkLandingPage.module.css';
 // not a token — render the "not found" state instead of bothering the API.
 const TOKEN_PATTERN = /^[A-Z0-9]{6,12}$/i;
 
+/**
+ * Public landing for the broker's invitation link.
+ *
+ * Flow scenarios:
+ *   1. No session yet → "Crear cuenta" / "Ya tengo cuenta" (sign-up uses
+ *      ?link_token to attach the new tenant to this deal at signup time).
+ *   2. Logged in + soy el principal de este deal + wizard_completed →
+ *      "Ya enviaste tu información" + CTA al portal.
+ *   3. Logged in + soy el principal + wizard a la mitad → "Continúa donde
+ *      te quedaste" + CTA al wizard.
+ *   4. Logged in pero con OTRA cuenta (no soy el principal del deal) →
+ *      "Esta liga es para otra cuenta" + CTA a cerrar sesión.
+ *
+ * Roomies + avales eventualmente recibirán su propio link_token distinto
+ * del principal (cuando exista el flujo de invitar roomies), así que cada
+ * persona vive su propio gate aquí.
+ */
 export function LinkLandingPage() {
   const { linkToken = '' } = useParams<{ linkToken: string }>();
   const isPlausibleToken = TOKEN_PATTERN.test(linkToken);
+  const { me, loading: authLoading } = useAuth();
+  const isAuthed = !!readToken() && !!me;
 
   const q = useQuery({
     queryKey: ['public-deal', linkToken],
@@ -24,11 +46,20 @@ export function LinkLandingPage() {
     enabled: isPlausibleToken,
   });
 
+  // Solo lanzamos /tenant/me/full si hay sesión — el endpoint requiere
+  // JWT con perfil de tenant.
+  const meFullQ = useQuery({
+    queryKey: ['tenant-me-full'],
+    queryFn: () => tenantMeApi.full(),
+    enabled: isAuthed && me?.profile_type === 'tenant',
+    staleTime: 30_000,
+  });
+
   if (!isPlausibleToken) {
     return <NotFoundShell />;
   }
 
-  if (q.isLoading) {
+  if (q.isLoading || authLoading) {
     return (
       <div className={styles.root}>
         <Header />
@@ -43,35 +74,96 @@ export function LinkLandingPage() {
     return <NotFoundShell />;
   }
 
-  const { deal, property, line_items, total_cents, broker } = q.data;
+  const { deal, broker } = q.data;
+
+  if (deal.status === 'cancelled') {
+    return <CancelledShell deal={deal} broker={broker} />;
+  }
+
+  // Bifurcación principal por estado de sesión + match con el deal.
+  if (isAuthed && me) {
+    const userId = me.user.id;
+    const profileType = me.profile_type;
+
+    // Sesión con un perfil que NO es tenant (broker, admin). No tiene
+    // sentido que entren a una liga de inquilino con esa cuenta — los
+    // empujamos a cerrar sesión.
+    if (profileType !== 'tenant') {
+      return (
+        <WrongAccountShell
+          deal={deal}
+          broker={broker}
+          email={me.user.email}
+          reason="not_tenant"
+        />
+      );
+    }
+
+    // Si el principal_tenant_user_id existe y NO soy yo → liga ajena.
+    if (deal.principal_tenant_user_id && deal.principal_tenant_user_id !== userId) {
+      return (
+        <WrongAccountShell
+          deal={deal}
+          broker={broker}
+          email={me.user.email}
+          reason="wrong_principal"
+        />
+      );
+    }
+
+    // Si no hay principal aún pero ya tengo sesión de tenant, normalmente
+    // significa que estoy autenticado bajo otra deal previa o que aún no
+    // hago el attach. /tenant/me/full nos dice en qué deals soy principal
+    // y si terminé. Esperamos el query.
+    if (meFullQ.isLoading) {
+      return (
+        <div className={styles.root}>
+          <Header folio={deal.folio} />
+          <div className={styles.body}>
+            <p className={styles.subtitle}>Cargando tu progreso…</p>
+          </div>
+        </div>
+      );
+    }
+
+    // Si soy el principal de este deal exacto → mostrar estado correcto.
+    if (deal.principal_tenant_user_id === userId && meFullQ.data) {
+      const wizardCompleted = meFullQ.data.tenant.wizard_completed;
+      if (wizardCompleted) {
+        return <AlreadyDoneShell deal={deal} broker={broker} />;
+      }
+      return <ResumeShell deal={deal} broker={broker} step={meFullQ.data.tenant.wizard_step} />;
+    }
+
+    // Caso edge: tengo sesión de tenant pero este deal aún no tiene
+    // principal_tenant_user_id (nadie firmó). Le mostramos el landing
+    // normal — al darle "Continuar" haremos el attach (la liga puede
+    // ser de otro deal donde aún no soy principal).
+  }
+
+  // Default: no auth, o auth pero el deal aún no tiene principal.
+  return <FullLandingShell data={q.data} linkToken={linkToken} />;
+}
+
+/* ─── Scenario shells ─────────────────────────────────────────── */
+
+function FullLandingShell({
+  data,
+  linkToken,
+}: {
+  data: PublicDealResponse;
+  linkToken: string;
+}) {
+  const { deal, property, line_items, total_cents, broker } = data;
   const brokerName = broker
     ? `${broker.first_name} ${broker.last_name}`.trim()
     : 'tu asesor';
   const brokerFirst = broker?.first_name?.trim() || 'tu asesor';
   const principalFirst = deal.principal_tenant_name?.trim().split(' ')[0] ?? null;
 
-  if (deal.status === 'cancelled') {
-    return (
-      <div className={styles.root}>
-        <Header folio={deal.folio} />
-        <div className={styles.body}>
-          <span className={styles.eyebrow}>Invitación cancelada</span>
-          <h1 className={styles.title}>
-            Esta investigación ya no <em>está activa</em>.
-          </h1>
-          <p className={styles.subtitle}>
-            {brokerName} canceló esta invitación. Si la sigues necesitando,
-            pídele al asesor que te genere una nueva liga.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className={styles.root}>
       <Header folio={deal.folio} />
-
       <div className={styles.body}>
         <span className={styles.eyebrow}>
           <span className={styles.eyebrowDot} aria-hidden /> Investigación de arrendamiento
@@ -98,7 +190,8 @@ export function LinkLandingPage() {
             </p>
             {deal.rent_amount_cents ? (
               <p className={styles.cardPrice}>
-                {formatCents(deal.rent_amount_cents, deal.currency)} <span className={styles.cardPriceSub}>/ mes</span>
+                {formatCents(deal.rent_amount_cents, deal.currency)}{' '}
+                <span className={styles.cardPriceSub}>/ mes</span>
               </p>
             ) : null}
           </Card>
@@ -110,7 +203,9 @@ export function LinkLandingPage() {
             <ul className={styles.includes}>
               {line_items.map((li) => (
                 <li key={li.id} className={styles.includesRow}>
-                  <span className={styles.includesIcon}><IconCheck width={14} height={14} /></span>
+                  <span className={styles.includesIcon}>
+                    <IconCheck width={14} height={14} />
+                  </span>
                   <span className={styles.includesText}>
                     {li.product?.name ?? 'Producto'}
                     {li.product?.description ? (
@@ -121,34 +216,237 @@ export function LinkLandingPage() {
               ))}
             </ul>
             <p className={styles.cardPrice}>
-              {formatCents(total_cents, deal.currency)} <span className={styles.cardPriceSub}>total</span>
+              {formatCents(total_cents, deal.currency)}{' '}
+              <span className={styles.cardPriceSub}>total</span>
             </p>
           </Card>
         ) : null}
 
         <Card>
           <div className={styles.trustRow}>
-            <span className={styles.trustIcon}><IconShield /></span>
-            <span>Tus datos se comparten <strong>solo</strong> con {brokerName}.</span>
+            <span className={styles.trustIcon}>
+              <IconShield />
+            </span>
+            <span>
+              Tus datos se comparten <strong>solo</strong> con {brokerName}.
+            </span>
           </div>
           <div className={styles.trustRow}>
-            <span className={styles.trustIcon}><IconClock /></span>
+            <span className={styles.trustIcon}>
+              <IconClock />
+            </span>
             <span>Resultado promedio en 24 horas desde que terminas y pagas.</span>
           </div>
         </Card>
 
         <div className={styles.actions}>
           <Link to={`/auth/signup?link_token=${encodeURIComponent(linkToken)}`} style={{ display: 'block' }}>
-            <Button fullWidth size="lg">Crear cuenta y continuar</Button>
+            <Button fullWidth size="lg">
+              Crear cuenta y continuar
+            </Button>
           </Link>
           <Link to={`/auth/login?link_token=${encodeURIComponent(linkToken)}`} style={{ display: 'block' }}>
-            <Button fullWidth size="lg" variant="ghost">Ya tengo cuenta</Button>
+            <Button fullWidth size="lg" variant="ghost">
+              Ya tengo cuenta
+            </Button>
           </Link>
         </div>
 
         <p className={styles.legalFootnote}>
           Al continuar deberás aceptar nuestro Aviso de Privacidad, el Tratamiento
           de Datos Personales Sensibles y los Términos y Condiciones.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Caso 2: ya terminé el wizard de este deal.
+ */
+function AlreadyDoneShell({
+  deal,
+  broker,
+}: {
+  deal: PublicDealResponse['deal'];
+  broker: PublicDealResponse['broker'];
+}) {
+  const brokerName = broker
+    ? `${broker.first_name} ${broker.last_name}`.trim()
+    : 'tu asesor';
+  return (
+    <div className={styles.root}>
+      <Header folio={deal.folio} />
+      <div className={styles.body}>
+        <div className={styles.statusHero}>
+          <span className={`${styles.statusHeroIcon} ${styles.statusHeroIcon_ok}`}>
+            <IconCheck width={22} height={22} />
+          </span>
+          <span className={styles.eyebrow}>Investigación enviada</span>
+          <h1 className={styles.title}>
+            Ya enviaste tu información para <em>esta investigación</em>.
+          </h1>
+          <p className={styles.subtitle}>
+            {brokerName} está revisando tu perfil. Te avisaremos cuando tengas
+            resultado. Si necesitas corregir algo, escríbele para que
+            destrabe el paso.
+          </p>
+        </div>
+
+        <div className={styles.actions}>
+          <Link to="/mi-informacion" style={{ display: 'block' }}>
+            <Button fullWidth size="lg">
+              Ir a mi portal
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Caso 3: tengo este wizard a la mitad.
+ */
+function ResumeShell({
+  deal,
+  broker,
+  step,
+}: {
+  deal: PublicDealResponse['deal'];
+  broker: PublicDealResponse['broker'];
+  step: number;
+}) {
+  const brokerFirst = broker?.first_name?.trim() || 'tu asesor';
+  const stepLabel = step > 0 ? ` (paso ${step} de 9)` : '';
+  return (
+    <div className={styles.root}>
+      <Header folio={deal.folio} />
+      <div className={styles.body}>
+        <div className={styles.statusHero}>
+          <span className={`${styles.statusHeroIcon} ${styles.statusHeroIcon_progress}`}>
+            <IconClock width={20} height={20} />
+          </span>
+          <span className={styles.eyebrow}>Investigación a la mitad</span>
+          <h1 className={styles.title}>
+            Continúa donde <em>te quedaste</em>.
+          </h1>
+          <p className={styles.subtitle}>
+            Ya empezaste el perfil para la invitación de {brokerFirst}
+            {stepLabel}. Guardamos todo lo que llevabas, solo retoma desde
+            el siguiente paso.
+          </p>
+        </div>
+
+        <div className={styles.actions}>
+          <Link to="/wizard" style={{ display: 'block' }}>
+            <Button fullWidth size="lg">
+              Continuar mi investigación
+            </Button>
+          </Link>
+          <Link to="/mi-informacion" style={{ display: 'block' }}>
+            <Button fullWidth size="lg" variant="ghost">
+              Ver mi información actual
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Caso 4: tengo sesión pero esta liga no es para mi cuenta.
+ */
+function WrongAccountShell({
+  deal,
+  broker,
+  email,
+  reason,
+}: {
+  deal: PublicDealResponse['deal'];
+  broker: PublicDealResponse['broker'];
+  email: string;
+  reason: 'wrong_principal' | 'not_tenant';
+}) {
+  const brokerName = broker
+    ? `${broker.first_name} ${broker.last_name}`.trim()
+    : 'tu asesor';
+  const title =
+    reason === 'not_tenant'
+      ? (
+        <>
+          Esta liga es <em>para inquilinos</em>.
+        </>
+      )
+      : (
+        <>
+          Esta liga es para <em>otra cuenta</em>.
+        </>
+      );
+  const body =
+    reason === 'not_tenant'
+      ? `Estás logueado con una cuenta de ${email}, pero esta investigación es para un inquilino. Cierra sesión y entra (o crea cuenta) con el correo al que ${brokerName} mandó la invitación.`
+      : `Estás logueado como ${email}, pero esta investigación quedó vinculada a otra cuenta de inquilino. Cierra sesión y entra con la correcta, o pídele a ${brokerName} una liga nueva.`;
+  return (
+    <div className={styles.root}>
+      <Header folio={deal.folio} />
+      <div className={styles.body}>
+        <div className={styles.statusHero}>
+          <span className={`${styles.statusHeroIcon} ${styles.statusHeroIcon_warn}`}>
+            <IconShield width={20} height={20} />
+          </span>
+          <span className={styles.eyebrow}>Cuenta equivocada</span>
+          <h1 className={styles.title}>{title}</h1>
+          <p className={styles.subtitle}>{body}</p>
+        </div>
+
+        <div className={styles.actions}>
+          <LogoutAndRetryButton />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LogoutAndRetryButton() {
+  const { logout } = useAuth();
+  return (
+    <Button
+      fullWidth
+      size="lg"
+      onClick={() => {
+        logout();
+        // Mantiene la URL para que después del login el usuario vuelva aquí.
+        window.location.reload();
+      }}
+    >
+      Cerrar sesión
+    </Button>
+  );
+}
+
+function CancelledShell({
+  deal,
+  broker,
+}: {
+  deal: PublicDealResponse['deal'];
+  broker: PublicDealResponse['broker'];
+}) {
+  const brokerName = broker
+    ? `${broker.first_name} ${broker.last_name}`.trim()
+    : 'tu asesor';
+  return (
+    <div className={styles.root}>
+      <Header folio={deal.folio} />
+      <div className={styles.body}>
+        <span className={styles.eyebrow}>Invitación cancelada</span>
+        <h1 className={styles.title}>
+          Esta investigación ya no <em>está activa</em>.
+        </h1>
+        <p className={styles.subtitle}>
+          {brokerName} canceló esta invitación. Si la sigues necesitando,
+          pídele al asesor que te genere una nueva liga.
         </p>
       </div>
     </div>

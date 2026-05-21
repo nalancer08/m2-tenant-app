@@ -16,6 +16,10 @@ export interface PublicDealResponse {
     use_kind: string | null;
     contract_start_date: string | null;
     principal_tenant_name: string | null;
+    /** UUID del user del principal una vez que firmó. Null si aún
+     *  nadie tomó la liga. El frontend lo usa para detectar "este link
+     *  es mío" comparándolo contra el JWT user. */
+    principal_tenant_user_id: string | null;
   };
   property: {
     id: string;
