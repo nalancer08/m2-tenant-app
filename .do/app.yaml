@@ -1,24 +1,31 @@
 name: m2-tenant-app
 region: sfo
-features:
-  - buildpack-stack=ubuntu-22
 
 alerts:
   - rule: DEPLOYMENT_FAILED
   - rule: DOMAIN_FAILED
 
-static_sites:
+ingress:
+  rules:
+    - component:
+        name: m2-tenant-app
+      match:
+        path:
+          prefix: /
+
+services:
   - name: m2-tenant-app
-    environment_slug: node-js
+    dockerfile_path: Dockerfile
     source_dir: /
     github:
       repo: nalancer08/m2-tenant-app
       branch: main
       deploy_on_push: true
-    build_command: npm run build
-    output_dir: dist
-    index_document: index.html
-    catchall_document: index.html
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-0.5gb
+    health_check:
+      http_path: /
     envs:
       - key: VITE_API_URL
         scope: BUILD_TIME
@@ -29,11 +36,3 @@ static_sites:
       - key: VITE_GOOGLE_PLACES_KEY
         scope: BUILD_TIME
         value: ${VITE_GOOGLE_PLACES_KEY}
-
-ingress:
-  rules:
-    - component:
-        name: m2-tenant-app
-      match:
-        path:
-          prefix: /
