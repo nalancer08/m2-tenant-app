@@ -10,6 +10,10 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit"
   },
+  "engines": {
+    "node": ">=22",
+    "npm": ">=10"
+  },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-query": "^5.100.10",
